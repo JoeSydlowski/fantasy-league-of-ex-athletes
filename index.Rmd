@@ -21,7 +21,7 @@ flea_df <- readRDS("data/flea_df.RDS")
 ```
 
 
-```{r layout = "l-screen"}
+```{r layout = "l-page"}
 flea_df %>% 
   gt() %>%
   tab_header(title = "Fantasy League of Ex-Athletes (2015-2020)") %>%
