@@ -2,7 +2,7 @@ name: "fantasy-league-of-ex-athletes"
 title: "Fantasy League of Ex-Athletes"
 description: |
   Fantasy League of Ex-Athletes
-output_dir: "_site"
+output_dir: "docs"
 navbar:
   right:
     - text: "Home"
