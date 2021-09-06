@@ -73,7 +73,8 @@ flea_df %>%
     )) %>% 
   cols_width(
     contains("headshot") ~ px(55),
-    team_logo_espn ~ px(55)
+    team_logo_espn ~ px(55),
+    emoji_collase ~ px(150)
   ) %>%
   tab_footnote(footnote = "What would your win rate be if you played every team each week?",
                locations = cells_column_labels(columns = allplay_winpct)) %>% 
