@@ -3,31 +3,14 @@ title: "10k Simulations for 2021"
 site: distill::distill_website
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+### How many wins could each team have?
 
-library(ffsimulator)
-library(here)
-setwd(here())
-```
+![](plots/win_plot.png)
 
-# How many wins could each team have?
-```{r layout = "l-page"}
+### Which place will each team finish at?
 
-knitr::include_graphics("plots/win_plot.png")
+![](plots/rank_plot.png)
 
-```
+### How many points is each team expected to score?
 
-# How place will each team finish at?
-```{r layout = "l-page"}
-
-knitr::include_graphics("plots/rank_plot.png")
-
-```
-
-# How many points is each team expected to score?
-```{r layout = "l-page"}
-
-knitr::include_graphics("plots/points_plot.png")
-```
-
+![](plots/points_plot.png)
