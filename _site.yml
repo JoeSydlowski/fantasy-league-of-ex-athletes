@@ -9,6 +9,8 @@ navbar:
       href: index.html
     - text: "10k Sims"
       href: simulations-2021.html
+    - text: "Draft Recap
+      href: draft_recap.html
     - text: "Sleeper Link"
       href: "https://sleeper.app/leagues/739986523688230912"
 output: distill::distill_article
