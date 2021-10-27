@@ -1,0 +1,91 @@
+---
+title: "Fantasy League of Ex-Athletes"
+description: |
+  Standings through week 7
+site: distill::distill_website
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(ffscrapr)
+library(tidyverse)
+library(gt)
+library(RColorBrewer)
+library(emoji)
+library(here)
+setwd(here())
+
+flea_df <- readRDS("data/flea_df_2021.RDS")
+```
+
+
+```{r layout = "l-page"}
+flea_df %>% 
+  gt() %>%
+  tab_header(title = "League Standings 2021") %>%
+  cols_label(user_name = "Team",
+             years = "Seasons",
+             # pick_year = "Draft Slots",
+             emoji_collase = "Finish History",
+             allplay_winpct = "All-play Win %",
+             h2h_winpct = "Win %",
+             luck_pct = "Luck %",
+             team_logo_espn = "Top Drafted Team",
+             best_combo = "Best Pick",
+             best_headshot = "",
+             worst_combo = "Worst Pick",
+             worst_headshot = "",
+             injury_value_oe = "Lost to Injury",
+             draft_value_oe = "Over Expected") %>% 
+  cols_move(columns = c(years, emoji_collase, allplay_winpct, h2h_winpct, luck_pct,
+                        injury_value_oe, draft_value_oe,
+                        best_combo, best_headshot, worst_combo, worst_headshot, team_logo_espn),
+            after = user_name) %>% 
+  fmt_percent(columns = c(allplay_winpct, h2h_winpct, luck_pct, injury_value_oe, draft_value_oe),
+              decimals = 1) %>%
+  tab_spanner(label = "Draft Value",
+              columns = c(injury_value_oe, draft_value_oe)) %>% 
+  text_transform(
+    locations = cells_body(columns = c(best_headshot, worst_headshot)),
+    fn = function(x){ gt::web_image(x, height = 45) }) %>%
+  text_transform(
+    locations = cells_body(columns = c(team_logo_espn)),
+    fn = function(x){ gt::web_image(x, height = 45) }) %>%
+  cols_align(align = "left",
+             columns = c(best_combo, worst_combo)) %>%
+  cols_align(align = "right",
+             columns = c(emoji_collase)) %>%
+  cols_align(align = "center",
+             columns = team_logo_espn) %>% 
+  data_color(
+    columns = c(h2h_winpct, allplay_winpct, luck_pct, draft_value_oe),
+    colors = scales::col_factor(
+      brewer.pal(11,'PRGn')[3:8],
+      domain = NULL
+    )) %>% 
+  data_color(
+    columns = c(injury_value_oe),
+    colors = scales::col_factor(
+      brewer.pal(11,'PRGn')[8:3],
+      domain = NULL
+    )) %>% 
+  cols_width(
+    contains("headshot") ~ px(55),
+    team_logo_espn ~ px(55),
+    emoji_collase ~ px(150)
+  ) %>%
+  tab_footnote(footnote = "What would your win rate be if you played every team each week?",
+               locations = cells_column_labels(columns = allplay_winpct)) %>% 
+  tab_footnote(footnote = "Difference between your win rate and all play win rate",
+               locations = cells_column_labels(columns = luck_pct)) %>% 
+  tab_footnote(footnote = "Percent of your draft capital lost to injuries",
+               locations = cells_column_labels(columns = injury_value_oe)) %>% 
+  tab_footnote(footnote = "Value returned on each draft pick",
+               locations = cells_column_labels(columns = draft_value_oe)) %>% 
+  tab_source_note(source_note = emoji_glue("Best Team :trophy:, 2nd Place :2nd_place_medal:, 3rd Place :3rd_place_medal:, Playoffs :flexed_biceps:, Missed Playoffs :wastebasket:, Worst Team :taco:"))
+
+
+```
+
