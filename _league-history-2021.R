@@ -21,10 +21,10 @@ scoring_histoy <- ff_scoringhistory(conn, season = 2021) %>%
             games = n()) %>%
   ungroup() %>% 
   group_by(season, pos) %>% 
-  mutate(ppg = if_else(games < 3, NA_real_, ppg),
+  mutate(ppg = if_else(games < 5, NA_real_, ppg),
          ppg_rank = row_number(-ppg),
          ppg_rank_value = 1000 * exp(-0.1 * ppg_rank),
-         games_played_percent = games/7) %>% 
+         games_played_percent = games/13) %>% 
   ungroup() %>% 
   filter(!is.na(sleeper_id)) %>% 
   select(season, sleeper_id, ppg_rank, ppg_rank_value, games, games_played_percent)
