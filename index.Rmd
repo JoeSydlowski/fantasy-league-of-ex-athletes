@@ -5,7 +5,6 @@ description: |
 site: distill::distill_website
 ---
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 
@@ -17,14 +16,17 @@ library(emoji)
 library(here)
 setwd(here())
 
-flea_df <- readRDS("data/flea_df.RDS")
+flea_df <- readRDS("data/flea_df.RDS") %>% 
+  rowwise() %>% 
+  mutate(best_headshot = best_headshot[1],
+         worst_headshot = worst_headshot[1])
 ```
 
 
 ```{r layout = "l-page"}
 flea_df %>% 
   gt() %>%
-  tab_header(title = "League History (2015-2020)") %>%
+  tab_header(title = "League History (2015-2021)") %>%
   cols_label(user_name = "Team",
              years = "Seasons",
              # pick_year = "Draft Slots",
@@ -84,7 +86,7 @@ flea_df %>%
                locations = cells_column_labels(columns = injury_value_oe)) %>% 
   tab_footnote(footnote = "Value returned on each draft pick",
                locations = cells_column_labels(columns = draft_value_oe)) %>% 
-  tab_source_note(source_note = emoji_glue("Best Team :trophy:, 2nd Place :2nd_place_medal:, 3rd Place :3rd_place_medal:, Playoffs :flexed_biceps:, Missed Playoffs :wastebasket:, Worst Team :taco:"))
+  tab_source_note(source_note = emoji_glue("Best Team :trophy:, 2nd Place :2nd_place_medal:, 3rd Place :3rd_place_medal:, Playoffs :flexed_biceps:, Missed Playoffs :wastebasket:, Worst Team :taco:, Didn't Play :black_square_button:"))
 
 
 ```
