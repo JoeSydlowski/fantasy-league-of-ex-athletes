@@ -19,7 +19,8 @@ setwd(here())
 flea_df <- readRDS("data/flea_df.RDS") %>% 
   rowwise() %>% 
   mutate(best_headshot = best_headshot[1],
-         worst_headshot = worst_headshot[1])
+         worst_headshot = worst_headshot[1]) %>% 
+  select(-years)
 ```
 
 
@@ -28,7 +29,7 @@ flea_df %>%
   gt() %>%
   tab_header(title = "League History (2015-2021)") %>%
   cols_label(user_name = "Team",
-             years = "Seasons",
+             # years = "Seasons",
              # pick_year = "Draft Slots",
              emoji_collase = "Finish History",
              allplay_winpct = "All-play Win %",
@@ -41,7 +42,7 @@ flea_df %>%
              worst_headshot = "",
              injury_value_oe = "Lost to Injury",
              draft_value_oe = "Over Expected") %>% 
-  cols_move(columns = c(years, emoji_collase, allplay_winpct, h2h_winpct, luck_pct,
+  cols_move(columns = c(emoji_collase, allplay_winpct, h2h_winpct, luck_pct,
                         injury_value_oe, draft_value_oe,
                         best_combo, best_headshot, worst_combo, worst_headshot, team_logo_espn),
             after = user_name) %>% 
@@ -60,7 +61,9 @@ flea_df %>%
   cols_align(align = "right",
              columns = c(emoji_collase)) %>%
   cols_align(align = "center",
-             columns = team_logo_espn) %>% 
+             columns = team_logo_espn) %>%
+  tab_style(style = cell_text(whitespace = "nowrap"),
+            locations = cells_body(columns = emoji_collase)) %>% 
   data_color(
     columns = c(h2h_winpct, allplay_winpct, luck_pct, draft_value_oe),
     colors = scales::col_factor(
