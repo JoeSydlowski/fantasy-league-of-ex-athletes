@@ -1,0 +1,253 @@
+---
+title: "Draft Recap"
+author: "Joe Sydlowski"
+date: "9/7/2022"
+output:
+  distill::distill_article:
+    toc: true
+    toc_depth: 2
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+Welcome back to everyone's favorite league. The first league you think
+of when fantasy football season rolls around. The league that you let
+ruin your Sunday for the next 4 months. The league you work just a
+little harder on researching, scrounging the waiver wire, and agonizing
+over those precious start-sit decisions every week in hopes that it is
+finally your year to crawl out of the sludge and climb to the greatest
+achievement most of you can dream of: Fantasy Football Champion. Welcome
+back to the Fantasy League of Ex-Athletes.
+
+## Teeing up Some Wins - Ty Noel
+
+Our reigning Toilet Bowl chumpion and aspiring children's book author
+returns for his 7th year in the league. Despite a strong start, making
+the playoffs 4 of his first 5 years, last year's bed-shitting
+performance has many wondering if Ty, against all odds, is the worse of
+the two Noel brothers.
+
+**Team Name** 1/5 it's a good name, but now I have to look at it all
+year remembering that Tee Higgins isn't on my team
+
+**Best Pick** Tee Higgins (hon. mention Michael Pittman) - I thought for
+sure one of them was making it back around the turn to me
+
+**Worst Pick** Chase Edmonds - I don't hate the player, just where you
+took him. Nine awesome WRs went in the 7th round so the league set to
+benefit from Ty trying to fill out his RB slots.
+
+## WR - What Receiver? - Nick G
+
+The illustrious best man finally joins the league after we filtered out
+nine chumps in 7 years. If anyone else has a brother that wants to join
+the league get them warmed up for next year after we chew up and spit
+out another new recruit. On the off chance that Nick does find any
+success I can't think of any worse fate for Neal to be the last Galletti
+with a title in his own league.
+
+**Team Name** 3/5 Love an introspective king, but we do our team names
+with players in this league
+
+**Best Pick** Alvin Kamara - The Sydlowski bros were counting on Kamara
+to make it back to the end of the 2nd but Nick defied the Sleeper ADP
+and I think his team will benefit for it
+
+**Worst Pick** AJ Dillon - You don't end up on the trade block that fast
+if you feel good about a pick
+
+## Punting Puppies - Manager Mike
+
+Is Manager Mike still a manager? Hopefully he manages his fantasy
+football team better than Brothers because we don't need another team
+closing down. Returning to the league for the first time since his 2018
+3rd place debut, he still holds the record for the luckiest schedule in
+league history managing to go 10-3 with a roster that deserved to go
+6-7.
+
+**Team Name** 2/5 Honestly most people chuckled when they read the name
+but the reference is lost on me
+
+**Best Pick** T\*m Br\*dy - despite his gaunt face I wouldn't be
+surprised if Grandpa T\*m finished above this next guy...
+
+**Worst Pick** Joe Burrow - Seven QBs went in the first two rounds and I
+think Mike got the worst of the bunch while missing out on a gift
+wrapped league winner in CMC
+
+## Pitts and Giggles - Josh Noel
+
+Josh followed up 3 straight playoff seasons and a taste of the almighty
+Shiva glory with a return to the dredges of the dumpster fire. Our
+league's \#1 Packer fan managed to restrain himself from going full
+lactose intolerant on cheese curds this year. Now that Tony has left the
+league, Josh holds the title for most injured team year after year. It's
+something that would appear to be unlucky until you look at the team he
+drafted this year and see a rookie WR on PUP and two injured WRs Johnson
+and Waddle before week 1.
+
+**Team Name** 5/5 I giggled and shit myself
+
+**Best Pick** Rashod Bateman - Listen if my Lamar Jackson pick is going
+to pay off we're in this together okay? You and me
+
+**Worst Pick** Derek Carr - I think Josh instantly knew this pick was
+all shit and no giggles as soon as he made it. I'd rather have the 4 QBs
+taken after Carr (Fields, Tua, TLaw, Kirk) straight up. You can take
+Davante Adams off the Packers but you can't stop Josh from drafting his
+QB.
+
+## Sutton on These Hoes - Me, myself
+
+Was it the best idea to bully you all right before I see most of you
+this weekend? Probably not. But I went back and read some of my old
+columns and I think I was taking it too easy on you guys. I can't
+promise I'll write as much as I used to but it feels good to be
+stringing up your teams again and it helps when I've got a killer team
+to match.
+
+**Team Name** 5/5 stuntin on y'all hoes
+
+**Best Pick** Courtland Sutton - [let's
+ride](https://www.youtube.com/watch?v=G8p5_D0VsfM)
+
+**Worst Pick** Lamar Jackson - this league would actually be over if I
+hadn't trolled this pick but I had to keep the next few months
+interesting
+
+## I'm Allen on ESPN - Nick D
+
+We're glad to have you back this year, brother, and not having left the
+league without telling anyone. Some days I think that the Kwiatkow had
+it right and you actually are an O'Duncanwitz because you've mastered
+the Irish goodbye like none other. If it's a school, an apartment, or a
+dynasty league you can count on this guy to leave you high and dry. Just
+a little too fast to hit the /ff button, huh?
+
+**Team Name** 5/5 The man without a favorite color, food, or student
+somehow managed to latch on to a favorite fantasy football platform. But
+I love commitment to a bit.
+
+**Best Pick** CMC - the league is never going to give you a better pick
+so you better not waste it
+
+**Worst Pick** Damien Harris - somehow the worse Patriot back and worse
+than the next 4 RBs taken after him too
+
+## Just a Kupple of Matts - Neal G
+
+Dearly beloved, we are gathered hear today to celebrate an eternal union
+of Neal Galletti and fantasy football irrelevance. Neal has been hosting
+this league longer than he's been dating Hannah but somehow he managed
+to get a ring on her finger before fitting himself a title ring. In
+fact, despite being out of the league for the past 3 years, Manager Mike
+and Neal both last made the playoffs in 2018. Other teams with 1 playoff
+berth since 2016 include: Garic Polk, Winn Salander, and Adam Finley.
+Should anyone present know of any reason that this couple should not be
+joined in holy matrimony, speak now or forever hold your peace. Amen.
+
+**Team Name** 3/5 I count three Matts: Ryan, Stafford, and a door mat
+
+**Best Pick** DJ Moore - duh
+
+**Worst Pick** Josh Jacobs a.k.a Mike Davis 2.0
+
+## Smerkin Doubs - Jon Syd
+
+With Jon beating me out for a playoff spot last year he has a hold on
+the best playoff rate in the league for now with an impressive run of 6
+out of 7 seasons. The past 3 years hasn't had as much hardware as the
+first 3 but you've gotta make the playoffs to stand a chance. It only
+took 26 years for him to pass me at something so keep chasing your
+dreams kids. Jon drafts like he disc golfs; there's a lot of cussing,
+some narrow misses, but at the end of the day you're just glad you
+didn't get it while he's throwing.
+
+**Team Name** 420/5
+
+**Best Pick** Stefon Diggs - I guess our mom didn't teach him to share
+well with me well enough
+
+**Worst Pick** Nick Chubb - somehow always leaves you feeling a little
+bloated in the middle and not able to reach that full length of his
+potential
+
+## Get Swifty - Eric Bu
+
+As Ryge finally conquered his first championship, Eric and Neal now
+share the prestigious title for longest tenured members without a title.
+With one more playoff appearance to his name, slightly better scheduling
+luck, and a better recent draft history capped off with a shining Deebo
+Samuel pick a year ago, I'd give Eric slightly better odds to break the
+drought before Neal. It remains just one more venue for their seemingly
+never ending contest of fierce, but friendly competitions.
+
+**Team Name** 5/5 good enough to save our
+[planet](https://www.youtube.com/watch?v=4ctK1aoWuqY)
+
+**Best Pick** The QB pairing of Mahomes with Daniel Jones might be the
+best ceiling/floor pairing in superflex leagues I've seen
+
+**Worst Pick** George Kittle might've been a reach in round before he
+was hurt going into week 1
+
+## MoreMooney 'MarrProblems - Lizandro
+
+Lizandro must model his fantasy squad after his favorite teams -
+struggling to score and lucky to win 40% of his games. He holds the
+title for the lowest active all-play win % in the league at almost 45%.
+Hoping to build on last year's 3rd place finish the bar is in hell for
+Lizandro to have a relevant season.
+
+**Team Name** 8/5 A yearly bright spot in combining as many player names
+as possible Lizandro has outdone himself with this masterpiece
+
+**Best Pick** Going back to the same well I'll say the dynamic QB duo of
+Hurts and Dak, Lizandro drained the last of the elite QB tier before
+passing the league his leftovers
+
+**Worst Pick** Ja'Marr Chase - was it worth passing on league winning
+CMC just for your team name? Yeah, probably
+
+## Team Name Pending - Scottie Dubs
+
+One in 4 universes in the multiverse are probably dealing with a fate
+worse than Thanos' snap... Scott really has been that close to 3-peting
+after following up his championship run in 2020 with 2 2nd place
+finishes. With a mind boggling 65% all-play win% only his terrible
+scheduling luck might've been holding him back. While the fates play
+with his team's schedule they bless his team with immaculate injury
+luck. Scott's 1st round picks have combined to miss 0 games in 4 years.
+The 20 players he's taken in the top 5 rounds have missed only 22 games
+or about 1 game per player per season. At some point we're gonna send
+Josh with tire iron to fix this trend.
+
+**Team Name** Fucking 0/5 That's weird I don't see Stafford on your team
+anywhere
+
+**Best Pick** Gabe Davis - the man caught 10 balls for 200 yards and 4
+TDs in the best game I've ever seen. He's got the juice.
+
+**Worst Pick** Travis Kelce - if you're gonna be the first one to draft
+a TE you better make sure it's the best TE
+
+## Armed Rodgery - Ryge
+
+In only his 2nd playoff appearance of the past 7 years Ryan managed to
+defy all expectations and claim his first title. A draft for the record
+books Ryan somehow managed to snag FOUR (4) fucking players that went in
+the first round of this draft (Kyler, JT, Chase, and Justin Jefferson).
+I've heard of the blind squirrel finding a nut before, but I've never
+seen such a blind squirrel find Blackbeard's lost fucking treasure and
+spend the gold to not only fix his eyesight but also get laser eyes and
+live in a squirrel penthouse with a harem of squirrel harlots. It's a
+hard act to follow.
+
+**Team Name** 3/5 It's good, but give me 4 laps around the gym
+
+**Best Pick** Playoff Lenny - Ryan goes back to the well after hitting
+big on him a year ago and still gets a great value
+
+**Worst Pick** DK Metcalf - listen, I've watched Geno Smith play QB more
+than anyone should have to and that's not a road you want to go down

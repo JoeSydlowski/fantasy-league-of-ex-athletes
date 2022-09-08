@@ -7,14 +7,20 @@ navbar:
   right:
     - text: "Home"
       href: index.html
-    - text: "10k Sims"
-      href: simulations-2021.html
-    - text: "Draft Recap"
-      href: draft_recap.html
-    - text: "Week 3 Recap"
-      href: week_3_recap.html
-    - text: "Week 6 Recap"
-      href: week_6_recap.html
+    - text: "2022 Draft Recap"
+      href: draft_recap_2022.html
     - text: "Sleeper Link"
-      href: "https://sleeper.app/leagues/739986523688230912"
+      href: "https://sleeper.app/leagues/863895883606056960"
+    - text: "2021 Season"
+      menu:
+      - text: "Sleeper Link"
+        href: "https://sleeper.app/leagues/739986523688230912"
+      - text: "Preseason Simulations"
+        href: simulations-2021.html
+      - text: "Draft Recap"
+        href: draft_recap.html
+      - text: "Week 3 Recap"
+        href: week_3_recap.html
+      - text: "Week 6 Recap"
+        href: week_6_recap.html
 output: distill::distill_article

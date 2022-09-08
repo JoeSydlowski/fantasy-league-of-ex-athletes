@@ -114,7 +114,9 @@ espn_scoring_history <-
   ff_scoringhistory(espn_conn, season = 2015:2020) %>%
   filter(week <= 16,
          pos %in% c("QB","RB","WR","TE")) %>% 
-  rename(platform_id = espn_id)
+  rename(platform_id = espn_id) %>% 
+  mutate(platform_id == case_when(player_name == "Rob Gronkowski" ~ "13229",
+                                  TRUE ~ platform_id))
 
 sleeper_scoring_history <- 
   ff_scoringhistory(sleeper_conn, season = 2021) %>%
@@ -133,7 +135,9 @@ scoring_history <-
   mutate(ppg = if_else(games < 4, NA_real_, ppg),
          ppg_rank = row_number(-ppg),
          ppg_rank_value = 1000 * exp(-0.1 * ppg_rank),
-         games_played_percent = games/15) %>% 
+         # Week 17 title means 16 games per player
+         games_played_percent = if_else(season >= 2021, games/16, games/15),
+         games_played_percent = if_else(games_played_percent >= 1, 1, games_played_percent)) %>% 
   ungroup() %>% 
   filter(!is.na(platform_id)) %>% 
   select(season, platform_id, ppg_rank, ppg_rank_value, games, games_played_percent)
@@ -154,6 +158,7 @@ draft_history <-
   bind_rows(sleeper_draft_history) %>% 
   group_by(season, pos) %>% 
   mutate(pos_rank = row_number(overall),
+         # By position because we switched from 1QB to SF
          pos_rank_value = 1000 * exp(-0.1 * pos_rank)) %>% 
   mutate(player_id = as.character(player_id),
          user_name = case_when(

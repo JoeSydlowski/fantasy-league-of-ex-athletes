@@ -39,7 +39,10 @@ flea_conn <- ff_connect(platform = "sleeper", league_id = "863895883606056960", 
 
 flea_draft <- ff_draft(flea_conn) %>%
   mutate(ovr_pick = row_number(),
-         pick_value = 1000*exp(-0.025 * ovr_pick))
+         pick_value = 1000*exp(-0.025 * ovr_pick)) %>% 
+  group_by(pos) %>% 
+  mutate(pos_pick = row_number(ovr_pick)) %>% 
+  ungroup()
 
 ffpros_ranks <- fp_rankings(page = "superflex-cheatsheets", sport = "nfl") %>%
   left_join(select(dp_playerids(), fantasypros_id, sleeper_id), by = "fantasypros_id") %>% 
