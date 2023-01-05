@@ -1,0 +1,320 @@
+---
+title: "Season Recap - 2022"
+author: "Joe Sydlowski"
+date: "1/5/2023"
+output:
+  distill::distill_article:
+    toc: true
+    toc_depth: 2
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+I thought I'd mix it up a little this year and write a season ending
+recap. The post draft article is for you guys; the league history
+article is for me! This is the longest league many have us ever (or
+will ever) be in and I enjoy looking back on the 8 years of history
+and the stories that come with it (if anyone has the ESPN league ID
+from 2010-2014 let me know). I honestly hope everyone comes back for
+another year, the history we have together is what makes this league
+special. Without further ado:
+
+## We love ESPN Moore - Nick D
+
+Nick stumbled into his 2nd Taco trophy of the past 4 years, but I
+applaud his creativity in finding new ways to achieve mediocrity. 
+Since 2019 his win totals have maintained remarkable consistency going
+from 6 wins to 7 and back to 6 the past two years. What's changed is
+that after being in the bottom half the league in drafting from 2019
+to 2021, Nick actually drafted a good team this year! The bad news- he
+got probably the worst trade luck I've ever seen with Breece Hall's
+knee exploding before my very eyes the week after he traded away CMC.
+In the words of our reigning champion, "I don't think I'd ever make
+another trade after that if I were Nick."
+
+**Best Pick** Chris Godwin - Drafted as WR30 finished as WR13 in PPG
+
+**Worst Pick** Darren Waller - we'll always have week 2
+
+**Luck Factors** When your newly acquired RB1 gets hurt the same week
+you trade for them you've got the worst injury luck in the league
+
+**Favorite Team Update** I keep track of which NFL team everyone spends
+the most draft capital on, but Nick drafted so many Cowboys in 2020
+this isn't changing for awhile
+
+## General Mills’ Cooks - Ty Noel
+
+Ty jumped out to a hot start in our league making the playoffs each of
+his first 3 seasons with us and leading many to question whether he was
+the better of the two Noels. Since 2019, however, he's made the
+playoffs only a single time and let us rest easy knowing that both
+brothers are bad at fantasy football. Despite one of the top 3 luckiest
+schedules in the league that playoff slump extends another year.
+
+**Best Pick** Tony Pollard - Drafted RB30 finished as RB7 in PPG
+
+**Worst Pick** At least Russell Wilson has more TDs than you have
+toilets
+
+**Luck Factors** One of the 3 luckiest injury teams only losing a little
+time from Russ, Higgins, and Josh Allen
+
+**Favorite Team Update** The Bills made a strong push this year but the
+Patriots hold the top spot since a strong 2017-2018 run
+
+## Chase-in’ that Mooney - Lizandro
+
+Our resident punching bag, Lizandro's greatest achievement in our
+league is managing to somehow avoid the Taco trophy every year.
+With Tony out, Liz holds the worst win % among active league members,
+but his resiliency keeps him out of the worst spot year after year.
+In a quote so well-known I can't even find who said it first, "It
+doesn't matter how many times you get knocked down. All that
+matters is you get up one more time than you were knocked down.” Thanks
+for keep getting up Liz!
+
+**Best Pick** idk I guess you get credit for Jalen Hurts even though
+you traded him away
+
+**Worst Pick** Hot take but Ja'Marr Chase and not just because he was
+my preseason choice for this title, but when CMC and Jefferson are the
+following two picks then the shoe fits
+
+**Luck Factors** One of the 4 unluckiest injury teams with Chase,
+Goedert, Dak, and Schultz all missing time. Also wanted to note the 2nd
+unluckiest schedule.
+
+**Favorite Team Update** Liz's favorite team coming into the season was
+the Eagles, but he cemented it with Hurts and Goedert
+
+## Get Swifty - Eric Bu
+
+I mentioned before the season that Eric and Neal now share the rare
+distinction of being the longest tenured league members without a
+title. In the battle for irrelevance they went blow for blow again
+both missing the playoffs. That means that Eric will hold his slight
+edge in playoff appearances for another year (3 to 2 over Neal in the
+past 8 years). Tune in next season for another chapter in this exciting
+rivalry!
+
+**Best Pick** Geno Smith! Drafted QB34 and finishing QB7 in PPG. He
+would've been the pick of the year if Eric wasn't also competing with
+Neal in that arena
+
+**Worst Pick** D'Andre Swift I was shocked to learn that he finished
+RB17 by PPG but that tells you everything you need to know
+
+**Luck Factors** In this season's most anticipated contest Eric has
+officially claimed the title of unluckiest schedule in league history!
+The 30% difference between Eric's win percentage of 21.4% and his all-
+play win percentage of 51.5% overtook Ryge's 2015 delta of 26.1%. His
+all-play win percentage was better than 4 of 6 playoff teams. Counter-
+balancing the league's worst schedule luck was this season's best
+injury luck with just a handful of games missed by Kittle and Swift.
+Pound for pound I think Eric had the best draft of this year capping
+off one of the weirdest seasons in recent memory.
+
+**Favorite Team Update** Eric spread out the teams this year allowing
+the Saints to hold the top spot
+
+## Pitts and Giggles - Josh Noel
+
+Josh followed up his 2020 bubble championship with two straight years
+on the outside looking in. Similar to the infamous Lakers' bubble
+title many are wondering if it should count at all or if it was just
+a one off fluke. Too bad you can't pay me off to say nice things about
+your team like you bribed those Crunch gym goers on the news. If Eric's
+was the best drafted team of the year then this was the worst. Pitts,
+Najee, and Dalvin were probably 3 of the 6 worst picks this year with
+hindsight. You'll make it to round 5 before you find a good pick Josh
+made in Waddle. I hope your Russell Westbrook is out there somewhere
+buddy.
+
+**Best Pick** I'll go with Lockett (drafted WR41 finished WR17) over
+Waddle
+
+**Worst Pick** This season was all Pitts and no giggles
+
+**Luck Factor** Middle of the road injury and schedule luck
+
+**Favorite Team Update** Minnesota finally starting to catch Green
+Bay as Josh's favorite team to draft. You can just admit you like
+the whole NFC north besides the Bears.
+
+## Just a Kupple of Matts - Neal G
+
+Do you guys ever get tired of writing about bad teams? Maybe
+Neal's prize for getting 7th this year is that I got tired of writing
+bad things about the worst 5 teams before I got to him. We all know
+the idea here: Neal hasn't made the playoffs since 2018. Here are some
+things that have happened since then (please hum along to We Didn't
+Start the Fire):
+
+Dennis Rodman in Korea
+Meme stocks are a bad idea
+
+COVID shuts it all down
+Tiger King becomes a clown
+
+Notre Dame is up in flame
+Tiktok changed the whole game
+
+British Brexit-mania
+Russians in Ukrainia
+
+Rebels plan an insurrection
+We're all out of Ivermectin
+
+Zuck lost in the metaverse
+Musk has burned his whole purse
+
+England's Queen just kicked the bucket
+And all of us should say fuck it
+
+(to we didn't start the fire)
+Neal didn't make the playoffs,
+There is no more crying, he should just stop trying
+
+**Best Pick** Josh Jacobs the absolute pick of the year, drafted RB21
+finished RB3. Double credit because he was choice for worst pick.
+
+**Worst Pick** Mike Evans week 17 would've been awesome if he hadn't
+been the reason you missed the playoffs
+
+**Luck Factor** Also one of the 4 unluckiest injury teams after missing
+huge stretches from Cooper Kupp and Stafford and rarely having 2 QBs to
+play
+
+**Favorite Team Update** Move over Steelers, the Rams are here to stay
+
+## Sutton on These Hoes - and I
+
+**Best Pick** AJ Brown based on how many times Nick G tried to trade
+fro him
+
+**Worst Pick** Lamar Jackson - at least I knew it at the time?
+
+**Luck Factor** I had the best schedule luck in the league but it
+didn't really matter once Lamar was out
+
+**Favorite Team Update** It took a Lamar Jackson-Mark Andrews stack
+to break my reign of Panthers favoritism
+
+## Punting Puppies - Manager Mike
+
+With his return to the league Mike claims the unique title of being the
+only member with a 100% playoff rate with at least 2 seasons. I'm
+mostly glad he's back because his 2018 was the second luckiest schedule
+in team history so a normal luck season evens it out a bit for me.
+
+**Best Pick** Kenneth Walker drafted RB37, finished RB16 by PPG
+
+**Worst Pick** Deebo Samuel drafted WR10, finished WR23 by PPG
+
+**Luck Factor** Middle of the road injury and schedule luck
+
+**Favorite Team Update** Get this man some skyline chili for all his
+Bengals
+
+## Daniel, Drive-ins, Dimes - Ryge
+
+Ryge avoided the dreaded championship hangover now doubling his
+playoff berths (1) from 2015-2020 in the past 2 seasons. While I
+have Ryan's 2021 team rated as one of the top 5 drafts in league
+history, this season was a little more pedestrian. His saving grace
+can be attributed to getting out of the worst pick of the year in 
+Jonathan Taylor into a late season push from Ja'Marr Chase. Too little,
+too late to recover from the misses of Rodgers and Metcalf. A third
+straight playoff berth might solidify Ryge in the top half of league
+power rankings.
+
+**Best Pick** Saquon Barkley drafted RB10, finished RB5
+
+**Worst Pick** Jonathan Taylor would already be the bust of the year,
+before you even get to taking him over Mahomes
+
+**Luck Factor** Middle of the road injury and schedule luck
+
+**Favorite Team Update** Jonathan Taylor tips the scales to the Colts
+over the Eagles
+
+## See You in Kell - Scottie Dubs
+
+I found an interesting trend before the season and I can't tell you
+how excited I was to check if it continued into 2022. This is why I
+track this history. THROUGH 5 SEASONS SCOTT'S FIRST ROUND PICKS
+HAVE MISSED 0 GAMES! ZERO!! What a wild stretch of good luck. This was
+the first year there was a blip in his top 5 round injury luck though
+as Trey Lance missed most of the year. After starting the first two
+rounds with RB1 Ekeler and TE1 Kelce, it very well could've been Scott
+hoisting his second trophy instead of Jon this year. Those two have
+undoubtedly been the best in the league over the past 4 years. Both
+are carrying 4 year playoff streaks into next season to see who blinks
+first.
+
+**Best Pick** Justin Fields drafted QB15, finished QB6 in PPG
+
+**Worst Pick** Mike Gesicki, I guess? If I'm complaining about your
+round 12 pick then you had a good draft
+
+**Luck Factor** Scott's league worst schedule luck finally flipped into
+the second best schedule luck this year
+
+**Favorite Team Update** Ekeler and the Chargers barely catch the top
+spot over Kelce and the Chiefs
+
+## Stick to video games - Nick G
+
+The team with a million names. It's like QBs, if you that many QBs do
+you really even have one? The elder Galletti took the league by storm
+rampaging through teams and feelings on his way to the 2nd place prize.
+An interesting case study in team building as Nick had some big hits
+and big misses to go along with some rough injury luck. It's not a
+combination I would've expected to make it so far, but maybe big hits
+like ARSB, Hopkins, Njoku, and Lawrence help more than big misses like
+Kyler, Javonte, and Kamara hurt a team. Counting down the days until
+Grant can join the league so I can root for one Galletti team though.
+
+**Best Pick** ARSB drafted WR27, finished WR9 by PPG
+
+**Worst Pick** Kyler Murray, you watched Jon, Ryan, and I all fall for
+the trap of passing on Mahomes and you jumped in after us
+
+**Luck Factor** Rounding out my top 4 unluckiest injury teams: both
+Nicks, Neal, and Liz
+
+**Favorite Team Update** First year in the league so Kyler and the
+Cardinals take the cake
+
+## Smerkin Doubs - Jon Syd
+
+Congrats to the champ. To my knowledge the 2nd ever 2-time champion of
+the Fantasy League for Ex-Athletes. It's not every year I can say the
+best team won the title, but it's true this year more than ever. With
+a sterling 75% all-play win percentage, Jon posted a top 5 season in
+league history by that metric. He joins other top 5 teams like
+Josh's 2020, Ryan and Scott's 2021, and his own 2020 season. Four of
+the top 6 teams by all-play win percentage have won a championship.
+Spots 7-10 all won 2nd place. Nick D won a championship with spot 11;
+Scott with spot 13.
+
+I know you're probably sick of stats by now but what an incredibly
+predictive stat - 11 of the top 13 regular seasons by all-play %
+played in the title game. Six of 13 won the title. Count Jon's season
+among the best in league history. I'm on the record saying Eric had
+the best draft but when you include trades and waivers, Jon managed
+the best team.
+
+**Best Pick** Hard to pick one on a title team: Hockenson, Breece,
+Rhamondre, Tua, DeVonta
+
+**Worst Pick** Easily Justin Herbert, but he still managed to trade
+his way into the QB he should've taken
+
+**Luck Factor** As with most title teams, great injury luck and the
+best break of all time getting CMC
+
+**Favorite Team Update** I may have moved on from the Panthers, but
+Jon carries the mantle proudly for me

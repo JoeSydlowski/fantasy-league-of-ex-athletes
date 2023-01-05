@@ -9,11 +9,13 @@ navbar:
       href: index.html
     - text: "2022 Draft Recap"
       href: draft_recap_2022.html
-    - text: "Sleeper Link"
+    - text: "2022 Season Recap"
+      href: season_recap_2022.html
+    - text: "Sleeper Link - 2022"
       href: "https://sleeper.app/leagues/863895883606056960"
     - text: "2021 Season"
       menu:
-      - text: "Sleeper Link"
+      - text: "Sleeper Link - 2021"
         href: "https://sleeper.app/leagues/739986523688230912"
       - text: "Preseason Simulations"
         href: simulations-2021.html

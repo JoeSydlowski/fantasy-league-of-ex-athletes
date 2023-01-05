@@ -23,6 +23,7 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -49,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { color: #20794d; } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -72,17 +74,18 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
-code span.sc { color: #20794d; } /* SpecialChar */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
 code span.st { color: #20794d; } /* String */
 code span.va { color: #111111; } /* Variable */
 code span.vs { color: #20794d; } /* VerbatimString */
 code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
+
 
   <!--radix_placeholder_meta_tags-->
   <title>Fantasy League of Ex-Athletes: Draft Recap</title>
@@ -786,6 +789,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1027,10 +1031,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1862,7 +1862,22 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        var refHtml = $('#ref-' + $(this).attr('data-cites')).html();
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
+        var refs = $(this).attr('data-cites').split(" ");
+        var refHtml = refs.map(function(ref) {
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
+        }).join("\n");
         window.tippy(this, {
           allowHTML: true,
           content: refHtml,
@@ -1873,6 +1888,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1972,6 +2012,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -1994,7 +2036,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2066,7 +2108,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="nav-right">
 <a href="index.html">Home</a>
 <a href="draft_recap_2022.html">2022 Draft Recap</a>
-<a href="https://sleeper.app/leagues/863895883606056960">Sleeper Link</a>
+<a href="season_recap_2022.html">2022 Season Recap</a>
+<a href="https://sleeper.app/leagues/863895883606056960">Sleeper Link - 2022</a>
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
 2021 Season
@@ -2074,7 +2117,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="https://sleeper.app/leagues/739986523688230912">Sleeper Link</a>
+<a href="https://sleeper.app/leagues/739986523688230912">Sleeper Link - 2021</a>
 <a href="simulations-2021.html">Preseason Simulations</a>
 <a href="draft_recap.html">Draft Recap</a>
 <a href="week_3_recap.html">Week 3 Recap</a>
@@ -2108,18 +2151,18 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#first-round">First Round</a></li>
-<li><a href="#lizandro">Lizandro</a></li>
-<li><a href="#nick">Nick</a></li>
-<li><a href="#joe">Joe</a></li>
-<li><a href="#ty">Ty</a></li>
-<li><a href="#jon">Jon</a></li>
-<li><a href="#scott">Scott</a></li>
-<li><a href="#ryan">Ryan</a></li>
-<li><a href="#eric">Eric</a></li>
-<li><a href="#josh">Josh</a></li>
-<li><a href="#tony">Tony</a></li>
-<li><a href="#terry">Terry</a></li>
+<li><a href="#first-round" id="toc-first-round">First Round</a></li>
+<li><a href="#lizandro" id="toc-lizandro">Lizandro</a></li>
+<li><a href="#nick" id="toc-nick">Nick</a></li>
+<li><a href="#joe" id="toc-joe">Joe</a></li>
+<li><a href="#ty" id="toc-ty">Ty</a></li>
+<li><a href="#jon" id="toc-jon">Jon</a></li>
+<li><a href="#scott" id="toc-scott">Scott</a></li>
+<li><a href="#ryan" id="toc-ryan">Ryan</a></li>
+<li><a href="#eric" id="toc-eric">Eric</a></li>
+<li><a href="#josh" id="toc-josh">Josh</a></li>
+<li><a href="#tony" id="toc-tony">Tony</a></li>
+<li><a href="#terry" id="toc-terry">Terry</a></li>
 </ul>
 </nav>
 </div>
@@ -2141,29 +2184,120 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </ol>
 <p>Well I got bored of hearing myself type after the first round but let’s take a look at everyone’s team. Just scrolling through the draft board I really only looked at your projected starters. Everyone always likes the guys on their bench more than everyone else in the league. I’ll try to keep it formatted but the thoughts probably won’t make sense.</p>
 <h2 id="lizandro">Lizandro</h2>
-<p><strong>QB:</strong> So I am going to do everyone a favor and act like you didn’t auto pick Cam with the last pick. I wish I could ignore the rest of your quarterbacks too. Pretty rough start when you have the biggest reach in the draft with Joe Burrow and then two guys that can’t throw the ball past the first down marker. Quarterbacks that win games usually have good fantasy seasons and your three quarterbacks look like they might win 10 games between the three of them. <strong>RB:</strong> Yikes. I hope you had a good time making that one pick cause that might the only thing right you did this draft. Welp at least you have CMC not like he’s ever missed a large portion of the season for any reason. But at least you’re ambulance chasing with the rest of your running backs so you’re one fuck up away from having two running backs to start. <strong>WR:</strong> Chris Godwin! There’s a player I kind of like. Glad I found one. But I am a bucs fan, Got some rookies you can be hopeful for but ya know at least you had fun in Nashville. <strong>TE:</strong> WELP! The country music must have just been calling you to pick dem country boys Kittle and Andrews, Good for you man way to not see race. <strong>Summary:</strong> I hope you have fun in this league. You’re looking good today. I think Joe took the Tacos out of his graph for you because he was worried about being racist. At least you put yourself in a good spot to get your first one this year.</p>
+<p><strong>QB:</strong>
+So I am going to do everyone a favor and act like you didn’t auto pick Cam with the last pick. I wish I could ignore the rest of your quarterbacks too. Pretty rough start when you have the biggest reach in the draft with Joe Burrow and then two guys that can’t throw the ball past the first down marker. Quarterbacks that win games usually have good fantasy seasons and your three quarterbacks look like they might win 10 games between the three of them.
+<strong>RB:</strong>
+Yikes. I hope you had a good time making that one pick cause that might the only thing right you did this draft. Welp at least you have CMC not like he’s ever missed a large portion of the season for any reason. But at least you’re ambulance chasing with the rest of your running backs so you’re one fuck up away from having two running backs to start.
+<strong>WR:</strong>
+Chris Godwin! There’s a player I kind of like. Glad I found one. But I am a bucs fan, Got some rookies you can be hopeful for but ya know at least you had fun in Nashville.
+<strong>TE:</strong>
+WELP! The country music must have just been calling you to pick dem country boys Kittle and Andrews, Good for you man way to not see race.
+<strong>Summary:</strong>
+I hope you have fun in this league. You’re looking good today. I think Joe took the Tacos out of his graph for you because he was worried about being racist. At least you put yourself in a good spot to get your first one this year.</p>
 <h2 id="nick">Nick</h2>
-<p><strong>QB:</strong> Mahomes Mahomes Mahomes Mahomes. Thank you for not passing on him. I know you’re against two QBs, it doesn’t mean you have to draft a corpse to start in your superflex. Maybe you’ve got the biggest of brains and all you need is two guys and a dream. <strong>RB:</strong> So this is what you did with all those roster spots instead of getting another person of use, You used 7 draft spots for 4.5 running backs??? Come on man I know you didn’t have Matthew Berry announcing your picks but I bet you really liked those WOOOWSSS! <strong>WR:</strong> JUDAS! How dare you take the only true WR handcuff! Why do you have so many players on dead teams? Dolphins, Jets, and the TEXANS???? Man I know you’re toxic but this just seems like self destructive behavior. <strong>TE:</strong> I guess you did good? Josh and Joe wouldn’t shout their mouths about either of your guys. I am guessing you didn’t hear about them yourself. <strong>Summary:</strong> So instead of making fun of you for taking the wrong guy at 2, I get to make fun of you for fucking up the rest of your picks. Are you going to be the first one to join Tony with the taco two pack this year?</p>
+<p><strong>QB:</strong>
+Mahomes Mahomes Mahomes Mahomes. Thank you for not passing on him. I know you’re against two QBs, it doesn’t mean you have to draft a corpse to start in your superflex. Maybe you’ve got the biggest of brains and all you need is two guys and a dream.
+<strong>RB:</strong>
+So this is what you did with all those roster spots instead of getting another person of use, You used 7 draft spots for 4.5 running backs??? Come on man I know you didn’t have Matthew Berry announcing your picks but I bet you really liked those WOOOWSSS!
+<strong>WR:</strong>
+JUDAS! How dare you take the only true WR handcuff! Why do you have so many players on dead teams? Dolphins, Jets, and the TEXANS???? Man I know you’re toxic but this just seems like self destructive behavior.
+<strong>TE:</strong>
+I guess you did good? Josh and Joe wouldn’t shout their mouths about either of your guys. I am guessing you didn’t hear about them yourself.
+<strong>Summary:</strong>
+So instead of making fun of you for taking the wrong guy at 2, I get to make fun of you for fucking up the rest of your picks. Are you going to be the first one to join Tony with the taco two pack this year?</p>
 <h2 id="joe">Joe</h2>
-<p><strong>LEAGUE CHAMP GUEST WRITER</strong> Why is Kamara – More like what is this team? Week one and this mother fucker is walking out weak ass Jimmy G and old ass Fitzmagic. I guess all the insider information he has didn’t inform him this is a two QB league. I think no one is a bigger Carolina fan than Joey, but hey maybe this is the year that DJ Moore will win you a championship. Let’s be honest Joe fudges the numbers for his “sims” to make his team always look better than it is. Just remember no one here checks his data and Joe is pretty much a day walker who cannot be trusted. Just bend over and I will be gentle for week one – Love your Daddy.</p>
+<p><strong>LEAGUE CHAMP GUEST WRITER</strong>
+Why is Kamara – More like what is this team? Week one and this mother fucker is walking out weak ass Jimmy G and old ass Fitzmagic. I guess all the insider information he has didn’t inform him this is a two QB league. I think no one is a bigger Carolina fan than Joey, but hey maybe this is the year that DJ Moore will win you a championship. Let’s be honest Joe fudges the numbers for his “sims” to make his team always look better than it is. Just remember no one here checks his data and Joe is pretty much a day walker who cannot be trusted. Just bend over and I will be gentle for week one – Love your Daddy.</p>
 <p>I clearly did not tell Josh what format I was doing but he didn’t ask either. Honestly glad he took the fuck you approach and may adapt it more going forward. But I will give my summary for Joe anyway.</p>
-<p><strong>Summary:</strong> It’s good to see you took some more swings than usual this year. Can’t wait to see you tilt when you have guys on the bench going off and you take some L’s.</p>
+<p><strong>Summary:</strong>
+It’s good to see you took some more swings than usual this year. Can’t wait to see you tilt when you have guys on the bench going off and you take some L’s.</p>
 <h2 id="ty">Ty</h2>
-<p><strong>QB:</strong> I fucking hate that you got Rodgers. It is just going to make you softer when Rodgers pegs the bears and you just justify it because you win the fantasy week. <strong>RB:</strong> Holy shit did you make all your picks just to make the Bears schedule hurt the least? Justifying the qbs and running backs for 6 of their 17 games, Incredible. <strong>WR:</strong> I don’t care about the bears non division schedule but finally some guys that are actually exciting and not just a hedge bet on your emo boy feelings. <strong>TE:</strong> I was big on Higbee about 2 weeks ago. Other than that I don’t really have an opinion. <strong>Summary:</strong> Well you’ve pretty successfully hedged your football season. Either the Bears play good and you have a bad fantasy season or the Bears lose in shootouts and you have a bad fantasy season. I guess we know your fate either way.</p>
+<p><strong>QB:</strong>
+I fucking hate that you got Rodgers. It is just going to make you softer when Rodgers pegs the bears and you just justify it because you win the fantasy week.
+<strong>RB:</strong>
+Holy shit did you make all your picks just to make the Bears schedule hurt the least? Justifying the qbs and running backs for 6 of their 17 games, Incredible.
+<strong>WR:</strong>
+I don’t care about the bears non division schedule but finally some guys that are actually exciting and not just a hedge bet on your emo boy feelings.
+<strong>TE:</strong>
+I was big on Higbee about 2 weeks ago. Other than that I don’t really have an opinion.
+<strong>Summary:</strong>
+Well you’ve pretty successfully hedged your football season. Either the Bears play good and you have a bad fantasy season or the Bears lose in shootouts and you have a bad fantasy season. I guess we know your fate either way.</p>
 <h2 id="jon">Jon</h2>
-<p><strong>QB:</strong> Man you fucking love Russell Motherfucking Wilson. It’s like clockwork. But otherwise at least you have some warm bodies that throw a football otherwise. <strong>RB:</strong> Hey Jon. You only took Derrick Henry. You know you have to start two running backs right? You really did draft by yourself this year. <strong>WR:</strong> Love the stack. You just picked some beast of football players and I don’t hate it. Not sure why you drafted two retired receivers but if they come back nothing like throwing to someone using a walker on the field. <strong>TE:</strong> All in on the rookie! GL <strong>Summary:</strong> Man Team Diapers, You like em young you like em old either way you’re full of shit.</p>
+<p><strong>QB:</strong>
+Man you fucking love Russell Motherfucking Wilson. It’s like clockwork. But otherwise at least you have some warm bodies that throw a football otherwise.
+<strong>RB:</strong>
+Hey Jon. You only took Derrick Henry. You know you have to start two running backs right? You really did draft by yourself this year.
+<strong>WR:</strong>
+Love the stack. You just picked some beast of football players and I don’t hate it. Not sure why you drafted two retired receivers but if they come back nothing like throwing to someone using a walker on the field.
+<strong>TE:</strong>
+All in on the rookie! GL
+<strong>Summary:</strong>
+Man Team Diapers, You like em young you like em old either way you’re full of shit.</p>
 <h2 id="scott">Scott</h2>
-<p><strong>QB:</strong> Good to see you know your type. White dude’s with big arms. Love seeing the Sam Darnold pick just to cuck the teams that didn’t take enough QBs yet. <strong>RB:</strong> This might be the earliest you’ve taken running backs in this league. Got two guys that expect to stay the field for 3 downs though! <strong>WR:</strong> Like the white man stack in LA. Pretty jealous you got Robby Anderson(Sur Pur). <strong>TE:</strong> Man fuck your tight ends. Davonte isn’t giving up any targets and neither is Jonnu. <strong>Summary:</strong> Welp. You switched up your strategy after getting second last year. Are you going to keep up that win percentage or are you due for a down year? Lots of pressure going into year four.</p>
+<p><strong>QB:</strong>
+Good to see you know your type. White dude’s with big arms. Love seeing the Sam Darnold pick just to cuck the teams that didn’t take enough QBs yet.
+<strong>RB:</strong>
+This might be the earliest you’ve taken running backs in this league. Got two guys that expect to stay the field for 3 downs though!
+<strong>WR:</strong>
+Like the white man stack in LA. Pretty jealous you got Robby Anderson(Sur Pur).
+<strong>TE:</strong>
+Man fuck your tight ends. Davonte isn’t giving up any targets and neither is Jonnu.
+<strong>Summary:</strong>
+Welp. You switched up your strategy after getting second last year. Are you going to keep up that win percentage or are you due for a down year? Lots of pressure going into year four.</p>
 <h2 id="ryan">Ryan</h2>
-<p><strong>QB:</strong> Welp. Not only did I know you liked Kyler cause you lived in Arizona but you also found the most useless feature on Sleeper to let everyone know you think he is really good. You better hope he is because he is basically your only QB. Probably a good call to draft Eason but did you really need to spend two picks on Indy’s QB? <strong>RB:</strong> Always knew you were a JT fan but I am not sure why you’re all in on a bad Colts team. You probably haven’t heard but Monte is losing his job this year. Maybe Chase will be on the case!(Paw Patrol Reference for you uncultured swines.) <strong>WR:</strong> Again with the Colts offense. I don’t care if its your last pick. Counting on some high upside young guys all around this year but your receivers are probably your best starting spot so far. <strong>TE:</strong> I don’t care about your TEs. <strong>Summary:</strong> I think you have a better chance to make your second playoffs than Lizandro. I just can’t believe you took Carson Wentz still.</p>
+<p><strong>QB:</strong>
+Welp. Not only did I know you liked Kyler cause you lived in Arizona but you also found the most useless feature on Sleeper to let everyone know you think he is really good. You better hope he is because he is basically your only QB. Probably a good call to draft Eason but did you really need to spend two picks on Indy’s QB?
+<strong>RB:</strong>
+Always knew you were a JT fan but I am not sure why you’re all in on a bad Colts team. You probably haven’t heard but Monte is losing his job this year. Maybe Chase will be on the case!(Paw Patrol Reference for you uncultured swines.)
+<strong>WR:</strong>
+Again with the Colts offense. I don’t care if its your last pick. Counting on some high upside young guys all around this year but your receivers are probably your best starting spot so far.
+<strong>TE:</strong>
+I don’t care about your TEs.
+<strong>Summary:</strong>
+I think you have a better chance to make your second playoffs than Lizandro. I just can’t believe you took Carson Wentz still.</p>
 <h2 id="eric">Eric</h2>
-<p><strong>QB:</strong> Hope Trey Lance starts for you and fucks over Joe. The Red Rocket might only get to start the first half of game one but man you’ll get his 2.5 points that he earns! Taysom Hill might not even get to catch a pass this year. <strong>RB:</strong> Big risk with Quon but someone has to take a risk on a top end guy! Nothing like having the best player on their team. <strong>WR:</strong> Lets see if Scary Terry is a Deandre Hopkins or Jordy Nelson for you this year. Outside of him do you have another receiver? I couldn’t find any. Weird. <strong>TE:</strong> Well shit there’s your other receiver. Nice. <strong>Summary:</strong> Weird stuff man. Your team feels a little like Plinko. You lined up where you’re dropping the disk and we’ve just hit the moment you let go to see what you win at the end. I hate to say it but it looks like only one of us can make the playoffs at a time and I like my chances.</p>
+<p><strong>QB:</strong>
+Hope Trey Lance starts for you and fucks over Joe. The Red Rocket might only get to start the first half of game one but man you’ll get his 2.5 points that he earns! Taysom Hill might not even get to catch a pass this year.
+<strong>RB:</strong>
+Big risk with Quon but someone has to take a risk on a top end guy! Nothing like having the best player on their team.
+<strong>WR:</strong>
+Lets see if Scary Terry is a Deandre Hopkins or Jordy Nelson for you this year. Outside of him do you have another receiver? I couldn’t find any. Weird.
+<strong>TE:</strong>
+Well shit there’s your other receiver. Nice.
+<strong>Summary:</strong>
+Weird stuff man. Your team feels a little like Plinko. You lined up where you’re dropping the disk and we’ve just hit the moment you let go to see what you win at the end. I hate to say it but it looks like only one of us can make the playoffs at a time and I like my chances.</p>
 <h2 id="josh">Josh</h2>
-<p><strong>QB:</strong> Running it Dak. Establishing the Dallas offense is going to be the new name of your podcast. Some QBs on some new teams to try out. I see Joe has you drinking the Jets hype. <strong>RB:</strong> Establish the Rum they said. Josh I think they just picked that as the title doesn’t mean you had to take Zeke first. Can’t believe you didn’t take JT, after hyping him up at 7. <strong>WR:</strong> How are you going to separate your Antonio Browns?? I would be worried about that. Got a couple guys that you’re going to be proud you drafted even if it doesn’t matter for like 5 years. <strong>TE:</strong> Young exciting guys here. Good luck. <strong>Summary:</strong> I don’t care that you won last year. I hope part of the reason you have 2 Lions in your starting lineup, is because you hedge your game day feelings against the Bears. Guess we will find out if you work in three year sprints or you’ve actually gotten good.</p>
+<p><strong>QB:</strong>
+Running it Dak. Establishing the Dallas offense is going to be the new name of your podcast. Some QBs on some new teams to try out. I see Joe has you drinking the Jets hype.
+<strong>RB:</strong>
+Establish the Rum they said. Josh I think they just picked that as the title doesn’t mean you had to take Zeke first. Can’t believe you didn’t take JT, after hyping him up at 7.
+<strong>WR:</strong>
+How are you going to separate your Antonio Browns?? I would be worried about that. Got a couple guys that you’re going to be proud you drafted even if it doesn’t matter for like 5 years.
+<strong>TE:</strong>
+Young exciting guys here. Good luck.
+<strong>Summary:</strong>
+I don’t care that you won last year. I hope part of the reason you have 2 Lions in your starting lineup, is because you hedge your game day feelings against the Bears. Guess we will find out if you work in three year sprints or you’ve actually gotten good.</p>
 <h2 id="tony">Tony</h2>
-<p><strong>QB:</strong> Love the two guys you got. No notes. LET’S GO TOMPA BAY!…well except you should’ve taken a third guy cause its sus you don’t have one. <strong>RB:</strong> I expected to hate your team by this point but the top of your draft is better than expected. <strong>WR:</strong> Man never trusting Juju again.Kenny Golladay is really going to have to become Megatron to be worth anythingggg and I don’t see any other receivers on your team.yikes. <strong>TE:</strong> Jealous of the Ertz pick. I hope he gets traded to the packers for you. <strong>Summary:</strong> I expected to hate your team cause you’re the only one with two tacos, but I’d say this is as good of a year as any to make the playoffs for once.</p>
+<p><strong>QB:</strong>
+Love the two guys you got. No notes. LET’S GO TOMPA BAY!…well except you should’ve taken a third guy cause its sus you don’t have one.
+<strong>RB:</strong>
+I expected to hate your team by this point but the top of your draft is better than expected.
+<strong>WR:</strong>
+Man never trusting Juju again.Kenny Golladay is really going to have to become Megatron to be worth anythingggg and I don’t see any other receivers on your team.yikes.
+<strong>TE:</strong>
+Jealous of the Ertz pick. I hope he gets traded to the packers for you.
+<strong>Summary:</strong>
+I expected to hate your team cause you’re the only one with two tacos, but I’d say this is as good of a year as any to make the playoffs for once.</p>
 <h2 id="terry">Terry</h2>
-<p><strong>QB:</strong> You took QBs I was looking at for your top two guys so I will let you decide if that’s a good thing or a bad thing but either way it makes me upset. <strong>RB:</strong> Well shit… I gave nick so much shit for wasting so many picks on running back then you just have to go and one up him. What the fuck Terry? 7 Picks and you only got 3 running backs back. You got ripped off and no one even had to do anything to you. I am glad you got to take Aaron Jones from Tony though. <strong>WR:</strong> Decent stacks but man you love Jacksonville thats fucking awesome. I’m happy you pay 25 dollars a year to show us how big of a Jags fan you are truly impressed. <strong>TE:</strong> <strong>Summary:</strong> Well Terry you got a lot of your eggs in the same baskets and I can appreciate that. Glad to see someone support their team instead of hedging their feelings with their fantasy team. All of you Bears fans are cowards.</p>
+<p><strong>QB:</strong>
+You took QBs I was looking at for your top two guys so I will let you decide if that’s a good thing or a bad thing but either way it makes me upset.
+<strong>RB:</strong>
+Well shit… I gave nick so much shit for wasting so many picks on running back then you just have to go and one up him. What the fuck Terry? 7 Picks and you only got 3 running backs back. You got ripped off and no one even had to do anything to you. I am glad you got to take Aaron Jones from Tony though.
+<strong>WR:</strong>
+Decent stacks but man you love Jacksonville thats fucking awesome. I’m happy you pay 25 dollars a year to show us how big of a Jags fan you are truly impressed.
+<strong>TE:</strong>
+<strong>Summary:</strong>
+Well Terry you got a lot of your eggs in the same baskets and I can appreciate that. Glad to see someone support their team instead of hedging their feelings with their fantasy team. All of you Bears fans are cowards.</p>
 <p>Welp I managed to get this together by the kick off of the season. Just wanted to take this time to thank you all for reading my scattered ideas that I jotted down inconsistently, I’d like to thank Josh for guest writing for Joe’s team. I also wanted to do a couple shout outs: to my mom Hi, to Terry and Tony I am honestly shocked you guys read this but just wanted to say hi as well, to Joe, Scott, Jon, Josh, Ty, and Eric amazing how lucky you guys have gotten over 6(ish) years, to Lizandro you look good today, to Ryan but for real how excited are you for Kyler?, to Nick I just hope you’re feeling okay man I know the start of the school year was tough on you but I didn’t think things were this bad. I have a phone number if you ever need help 1800-438-4663. Alright everyone this has been my thoughts. I did not proofread anything before sending it to Joe to post. I just hit send and let it fly at the bottom of the page! Good luck everybody else!</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->

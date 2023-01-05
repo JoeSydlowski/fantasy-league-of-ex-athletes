@@ -23,6 +23,7 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -49,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { color: #20794d; } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -72,17 +74,18 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
-code span.sc { color: #20794d; } /* SpecialChar */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
 code span.st { color: #20794d; } /* String */
 code span.va { color: #111111; } /* Variable */
 code span.vs { color: #20794d; } /* VerbatimString */
 code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
+
 
   <!--radix_placeholder_meta_tags-->
   <title>Fantasy League of Ex-Athletes: Draft Recap</title>
@@ -786,6 +789,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1027,10 +1031,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1862,7 +1862,22 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        var refHtml = $('#ref-' + $(this).attr('data-cites')).html();
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
+        var refs = $(this).attr('data-cites').split(" ");
+        var refHtml = refs.map(function(ref) {
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
+        }).join("\n");
         window.tippy(this, {
           allowHTML: true,
           content: refHtml,
@@ -1873,6 +1888,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1972,6 +2012,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -1994,7 +2036,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2066,7 +2108,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="nav-right">
 <a href="index.html">Home</a>
 <a href="draft_recap_2022.html">2022 Draft Recap</a>
-<a href="https://sleeper.app/leagues/863895883606056960">Sleeper Link</a>
+<a href="season_recap_2022.html">2022 Season Recap</a>
+<a href="https://sleeper.app/leagues/863895883606056960">Sleeper Link - 2022</a>
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
 2021 Season
@@ -2074,7 +2117,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="https://sleeper.app/leagues/739986523688230912">Sleeper Link</a>
+<a href="https://sleeper.app/leagues/739986523688230912">Sleeper Link - 2021</a>
 <a href="simulations-2021.html">Preseason Simulations</a>
 <a href="draft_recap.html">Draft Recap</a>
 <a href="week_3_recap.html">Week 3 Recap</a>
@@ -2108,82 +2151,201 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#teeing-up-some-wins---ty-noel">Teeing up Some Wins - Ty Noel</a></li>
-<li><a href="#wr---what-receiver---nick-g">WR - What Receiver? - Nick G</a></li>
-<li><a href="#punting-puppies---manager-mike">Punting Puppies - Manager Mike</a></li>
-<li><a href="#pitts-and-giggles---josh-noel">Pitts and Giggles - Josh Noel</a></li>
-<li><a href="#sutton-on-these-hoes---me-myself">Sutton on These Hoes - Me, myself</a></li>
-<li><a href="#im-allen-on-espn---nick-d">I’m Allen on ESPN - Nick D</a></li>
-<li><a href="#just-a-kupple-of-matts---neal-g">Just a Kupple of Matts - Neal G</a></li>
-<li><a href="#smerkin-doubs---jon-syd">Smerkin Doubs - Jon Syd</a></li>
-<li><a href="#get-swifty---eric-bu">Get Swifty - Eric Bu</a></li>
-<li><a href="#moremooney-marrproblems---lizandro">MoreMooney ’MarrProblems - Lizandro</a></li>
-<li><a href="#team-name-pending---scottie-dubs">Team Name Pending - Scottie Dubs</a></li>
-<li><a href="#armed-rodgery---ryge">Armed Rodgery - Ryge</a></li>
+<li><a href="#teeing-up-some-wins---ty-noel" id="toc-teeing-up-some-wins---ty-noel">Teeing up Some Wins - Ty Noel</a></li>
+<li><a href="#wr---what-receiver---nick-g" id="toc-wr---what-receiver---nick-g">WR - What Receiver? - Nick G</a></li>
+<li><a href="#punting-puppies---manager-mike" id="toc-punting-puppies---manager-mike">Punting Puppies - Manager Mike</a></li>
+<li><a href="#pitts-and-giggles---josh-noel" id="toc-pitts-and-giggles---josh-noel">Pitts and Giggles - Josh Noel</a></li>
+<li><a href="#sutton-on-these-hoes---me-myself" id="toc-sutton-on-these-hoes---me-myself">Sutton on These Hoes - Me, myself</a></li>
+<li><a href="#im-allen-on-espn---nick-d" id="toc-im-allen-on-espn---nick-d">I’m Allen on ESPN - Nick D</a></li>
+<li><a href="#just-a-kupple-of-matts---neal-g" id="toc-just-a-kupple-of-matts---neal-g">Just a Kupple of Matts - Neal G</a></li>
+<li><a href="#smerkin-doubs---jon-syd" id="toc-smerkin-doubs---jon-syd">Smerkin Doubs - Jon Syd</a></li>
+<li><a href="#get-swifty---eric-bu" id="toc-get-swifty---eric-bu">Get Swifty - Eric Bu</a></li>
+<li><a href="#moremooney-marrproblems---lizandro" id="toc-moremooney-marrproblems---lizandro">MoreMooney ’MarrProblems - Lizandro</a></li>
+<li><a href="#team-name-pending---scottie-dubs" id="toc-team-name-pending---scottie-dubs">Team Name Pending - Scottie Dubs</a></li>
+<li><a href="#armed-rodgery---ryge" id="toc-armed-rodgery---ryge">Armed Rodgery - Ryge</a></li>
 </ul>
 </nav>
 </div>
-<p>Welcome back to everyone’s favorite league. The first league you think of when fantasy football season rolls around. The league that you let ruin your Sunday for the next 4 months. The league you work just a little harder on researching, scrounging the waiver wire, and agonizing over those precious start-sit decisions every week in hopes that it is finally your year to crawl out of the sludge and climb to the greatest achievement most of you can dream of: Fantasy Football Champion. Welcome back to the Fantasy League of Ex-Athletes.</p>
+<p>Welcome back to everyone’s favorite league. The first league you think
+of when fantasy football season rolls around. The league that you let
+ruin your Sunday for the next 4 months. The league you work just a
+little harder on researching, scrounging the waiver wire, and agonizing
+over those precious start-sit decisions every week in hopes that it is
+finally your year to crawl out of the sludge and climb to the greatest
+achievement most of you can dream of: Fantasy Football Champion. Welcome
+back to the Fantasy League of Ex-Athletes.</p>
 <h2 id="teeing-up-some-wins---ty-noel">Teeing up Some Wins - Ty Noel</h2>
-<p>Our reigning Toilet Bowl chumpion and aspiring children’s book author returns for his 7th year in the league. Despite a strong start, making the playoffs 4 of his first 5 years, last year’s bed-shitting performance has many wondering if Ty, against all odds, is the worse of the two Noel brothers.</p>
-<p><strong>Team Name</strong> 1/5 it’s a good name, but now I have to look at it all year remembering that Tee Higgins isn’t on my team</p>
-<p><strong>Best Pick</strong> Tee Higgins (hon. mention Michael Pittman) - I thought for sure one of them was making it back around the turn to me</p>
-<p><strong>Worst Pick</strong> Chase Edmonds - I don’t hate the player, just where you took him. Nine awesome WRs went in the 7th round so the league set to benefit from Ty trying to fill out his RB slots.</p>
+<p>Our reigning Toilet Bowl chumpion and aspiring children’s book author
+returns for his 7th year in the league. Despite a strong start, making
+the playoffs 4 of his first 5 years, last year’s bed-shitting
+performance has many wondering if Ty, against all odds, is the worse of
+the two Noel brothers.</p>
+<p><strong>Team Name</strong> 1/5 it’s a good name, but now I have to look at it all
+year remembering that Tee Higgins isn’t on my team</p>
+<p><strong>Best Pick</strong> Tee Higgins (hon. mention Michael Pittman) - I thought for
+sure one of them was making it back around the turn to me</p>
+<p><strong>Worst Pick</strong> Chase Edmonds - I don’t hate the player, just where you
+took him. Nine awesome WRs went in the 7th round so the league set to
+benefit from Ty trying to fill out his RB slots.</p>
 <h2 id="wr---what-receiver---nick-g">WR - What Receiver? - Nick G</h2>
-<p>The illustrious best man finally joins the league after we filtered out nine chumps in 7 years. If anyone else has a brother that wants to join the league get them warmed up for next year after we chew up and spit out another new recruit. On the off chance that Nick does find any success I can’t think of any worse fate for Neal to be the last Galletti with a title in his own league.</p>
-<p><strong>Team Name</strong> 3/5 Love an introspective king, but we do our team names with players in this league</p>
-<p><strong>Best Pick</strong> Alvin Kamara - The Sydlowski bros were counting on Kamara to make it back to the end of the 2nd but Nick defied the Sleeper ADP and I think his team will benefit for it</p>
-<p><strong>Worst Pick</strong> AJ Dillon - You don’t end up on the trade block that fast if you feel good about a pick</p>
+<p>The illustrious best man finally joins the league after we filtered out
+nine chumps in 7 years. If anyone else has a brother that wants to join
+the league get them warmed up for next year after we chew up and spit
+out another new recruit. On the off chance that Nick does find any
+success I can’t think of any worse fate for Neal to be the last Galletti
+with a title in his own league.</p>
+<p><strong>Team Name</strong> 3/5 Love an introspective king, but we do our team names
+with players in this league</p>
+<p><strong>Best Pick</strong> Alvin Kamara - The Sydlowski bros were counting on Kamara
+to make it back to the end of the 2nd but Nick defied the Sleeper ADP
+and I think his team will benefit for it</p>
+<p><strong>Worst Pick</strong> AJ Dillon - You don’t end up on the trade block that fast
+if you feel good about a pick</p>
 <h2 id="punting-puppies---manager-mike">Punting Puppies - Manager Mike</h2>
-<p>Is Manager Mike still a manager? Hopefully he manages his fantasy football team better than Brothers because we don’t need another team closing down. Returning to the league for the first time since his 2018 3rd place debut, he still holds the record for the luckiest schedule in league history managing to go 10-3 with a roster that deserved to go 6-7.</p>
-<p><strong>Team Name</strong> 2/5 Honestly most people chuckled when they read the name but the reference is lost on me</p>
-<p><strong>Best Pick</strong> T*m Br*dy - despite his gaunt face I wouldn’t be surprised if Grandpa T*m finished above this next guy…</p>
-<p><strong>Worst Pick</strong> Joe Burrow - Seven QBs went in the first two rounds and I think Mike got the worst of the bunch while missing out on a gift wrapped league winner in CMC</p>
+<p>Is Manager Mike still a manager? Hopefully he manages his fantasy
+football team better than Brothers because we don’t need another team
+closing down. Returning to the league for the first time since his 2018
+3rd place debut, he still holds the record for the luckiest schedule in
+league history managing to go 10-3 with a roster that deserved to go
+6-7.</p>
+<p><strong>Team Name</strong> 2/5 Honestly most people chuckled when they read the name
+but the reference is lost on me</p>
+<p><strong>Best Pick</strong> T*m Br*dy - despite his gaunt face I wouldn’t be
+surprised if Grandpa T*m finished above this next guy…</p>
+<p><strong>Worst Pick</strong> Joe Burrow - Seven QBs went in the first two rounds and I
+think Mike got the worst of the bunch while missing out on a gift
+wrapped league winner in CMC</p>
 <h2 id="pitts-and-giggles---josh-noel">Pitts and Giggles - Josh Noel</h2>
-<p>Josh followed up 3 straight playoff seasons and a taste of the almighty Shiva glory with a return to the dredges of the dumpster fire. Our league’s #1 Packer fan managed to restrain himself from going full lactose intolerant on cheese curds this year. Now that Tony has left the league, Josh holds the title for most injured team year after year. It’s something that would appear to be unlucky until you look at the team he drafted this year and see a rookie WR on PUP and two injured WRs Johnson and Waddle before week 1.</p>
+<p>Josh followed up 3 straight playoff seasons and a taste of the almighty
+Shiva glory with a return to the dredges of the dumpster fire. Our
+league’s #1 Packer fan managed to restrain himself from going full
+lactose intolerant on cheese curds this year. Now that Tony has left the
+league, Josh holds the title for most injured team year after year. It’s
+something that would appear to be unlucky until you look at the team he
+drafted this year and see a rookie WR on PUP and two injured WRs Johnson
+and Waddle before week 1.</p>
 <p><strong>Team Name</strong> 5/5 I giggled and shit myself</p>
-<p><strong>Best Pick</strong> Rashod Bateman - Listen if my Lamar Jackson pick is going to pay off we’re in this together okay? You and me</p>
-<p><strong>Worst Pick</strong> Derek Carr - I think Josh instantly knew this pick was all shit and no giggles as soon as he made it. I’d rather have the 4 QBs taken after Carr (Fields, Tua, TLaw, Kirk) straight up. You can take Davante Adams off the Packers but you can’t stop Josh from drafting his QB.</p>
+<p><strong>Best Pick</strong> Rashod Bateman - Listen if my Lamar Jackson pick is going
+to pay off we’re in this together okay? You and me</p>
+<p><strong>Worst Pick</strong> Derek Carr - I think Josh instantly knew this pick was
+all shit and no giggles as soon as he made it. I’d rather have the 4 QBs
+taken after Carr (Fields, Tua, TLaw, Kirk) straight up. You can take
+Davante Adams off the Packers but you can’t stop Josh from drafting his
+QB.</p>
 <h2 id="sutton-on-these-hoes---me-myself">Sutton on These Hoes - Me, myself</h2>
-<p>Was it the best idea to bully you all right before I see most of you this weekend? Probably not. But I went back and read some of my old columns and I think I was taking it too easy on you guys. I can’t promise I’ll write as much as I used to but it feels good to be stringing up your teams again and it helps when I’ve got a killer team to match.</p>
+<p>Was it the best idea to bully you all right before I see most of you
+this weekend? Probably not. But I went back and read some of my old
+columns and I think I was taking it too easy on you guys. I can’t
+promise I’ll write as much as I used to but it feels good to be
+stringing up your teams again and it helps when I’ve got a killer team
+to match.</p>
 <p><strong>Team Name</strong> 5/5 stuntin on y’all hoes</p>
-<p><strong>Best Pick</strong> Courtland Sutton - <a href="https://www.youtube.com/watch?v=G8p5_D0VsfM">let’s ride</a></p>
-<p><strong>Worst Pick</strong> Lamar Jackson - this league would actually be over if I hadn’t trolled this pick but I had to keep the next few months interesting</p>
+<p><strong>Best Pick</strong> Courtland Sutton - <a href="https://www.youtube.com/watch?v=G8p5_D0VsfM">let’s
+ride</a></p>
+<p><strong>Worst Pick</strong> Lamar Jackson - this league would actually be over if I
+hadn’t trolled this pick but I had to keep the next few months
+interesting</p>
 <h2 id="im-allen-on-espn---nick-d">I’m Allen on ESPN - Nick D</h2>
-<p>We’re glad to have you back this year, brother, and not having left the league without telling anyone. Some days I think that the Kwiatkow had it right and you actually are an O’Duncanwitz because you’ve mastered the Irish goodbye like none other. If it’s a school, an apartment, or a dynasty league you can count on this guy to leave you high and dry. Just a little too fast to hit the /ff button, huh?</p>
-<p><strong>Team Name</strong> 5/5 The man without a favorite color, food, or student somehow managed to latch on to a favorite fantasy football platform. But I love commitment to a bit.</p>
-<p><strong>Best Pick</strong> CMC - the league is never going to give you a better pick so you better not waste it</p>
-<p><strong>Worst Pick</strong> Damien Harris - somehow the worse Patriot back and worse than the next 4 RBs taken after him too</p>
+<p>We’re glad to have you back this year, brother, and not having left the
+league without telling anyone. Some days I think that the Kwiatkow had
+it right and you actually are an O’Duncanwitz because you’ve mastered
+the Irish goodbye like none other. If it’s a school, an apartment, or a
+dynasty league you can count on this guy to leave you high and dry. Just
+a little too fast to hit the /ff button, huh?</p>
+<p><strong>Team Name</strong> 5/5 The man without a favorite color, food, or student
+somehow managed to latch on to a favorite fantasy football platform. But
+I love commitment to a bit.</p>
+<p><strong>Best Pick</strong> CMC - the league is never going to give you a better pick
+so you better not waste it</p>
+<p><strong>Worst Pick</strong> Damien Harris - somehow the worse Patriot back and worse
+than the next 4 RBs taken after him too</p>
 <h2 id="just-a-kupple-of-matts---neal-g">Just a Kupple of Matts - Neal G</h2>
-<p>Dearly beloved, we are gathered hear today to celebrate an eternal union of Neal Galletti and fantasy football irrelevance. Neal has been hosting this league longer than he’s been dating Hannah but somehow he managed to get a ring on her finger before fitting himself a title ring. In fact, despite being out of the league for the past 3 years, Manager Mike and Neal both last made the playoffs in 2018. Other teams with 1 playoff berth since 2016 include: Garic Polk, Winn Salander, and Adam Finley. Should anyone present know of any reason that this couple should not be joined in holy matrimony, speak now or forever hold your peace. Amen.</p>
+<p>Dearly beloved, we are gathered hear today to celebrate an eternal union
+of Neal Galletti and fantasy football irrelevance. Neal has been hosting
+this league longer than he’s been dating Hannah but somehow he managed
+to get a ring on her finger before fitting himself a title ring. In
+fact, despite being out of the league for the past 3 years, Manager Mike
+and Neal both last made the playoffs in 2018. Other teams with 1 playoff
+berth since 2016 include: Garic Polk, Winn Salander, and Adam Finley.
+Should anyone present know of any reason that this couple should not be
+joined in holy matrimony, speak now or forever hold your peace. Amen.</p>
 <p><strong>Team Name</strong> 3/5 I count three Matts: Ryan, Stafford, and a door mat</p>
 <p><strong>Best Pick</strong> DJ Moore - duh</p>
 <p><strong>Worst Pick</strong> Josh Jacobs a.k.a Mike Davis 2.0</p>
 <h2 id="smerkin-doubs---jon-syd">Smerkin Doubs - Jon Syd</h2>
-<p>With Jon beating me out for a playoff spot last year he has a hold on the best playoff rate in the league for now with an impressive run of 6 out of 7 seasons. The past 3 years hasn’t had as much hardware as the first 3 but you’ve gotta make the playoffs to stand a chance. It only took 26 years for him to pass me at something so keep chasing your dreams kids. Jon drafts like he disc golfs; there’s a lot of cussing, some narrow misses, but at the end of the day you’re just glad you didn’t get it while he’s throwing.</p>
+<p>With Jon beating me out for a playoff spot last year he has a hold on
+the best playoff rate in the league for now with an impressive run of 6
+out of 7 seasons. The past 3 years hasn’t had as much hardware as the
+first 3 but you’ve gotta make the playoffs to stand a chance. It only
+took 26 years for him to pass me at something so keep chasing your
+dreams kids. Jon drafts like he disc golfs; there’s a lot of cussing,
+some narrow misses, but at the end of the day you’re just glad you
+didn’t get it while he’s throwing.</p>
 <p><strong>Team Name</strong> 420/5</p>
-<p><strong>Best Pick</strong> Stefon Diggs - I guess our mom didn’t teach him to share well with me well enough</p>
-<p><strong>Worst Pick</strong> Nick Chubb - somehow always leaves you feeling a little bloated in the middle and not able to reach that full length of his potential</p>
+<p><strong>Best Pick</strong> Stefon Diggs - I guess our mom didn’t teach him to share
+well with me well enough</p>
+<p><strong>Worst Pick</strong> Nick Chubb - somehow always leaves you feeling a little
+bloated in the middle and not able to reach that full length of his
+potential</p>
 <h2 id="get-swifty---eric-bu">Get Swifty - Eric Bu</h2>
-<p>As Ryge finally conquered his first championship, Eric and Neal now share the prestigious title for longest tenured members without a title. With one more playoff appearance to his name, slightly better scheduling luck, and a better recent draft history capped off with a shining Deebo Samuel pick a year ago, I’d give Eric slightly better odds to break the drought before Neal. It remains just one more venue for their seemingly never ending contest of fierce, but friendly competitions.</p>
-<p><strong>Team Name</strong> 5/5 good enough to save our <a href="https://www.youtube.com/watch?v=4ctK1aoWuqY">planet</a></p>
-<p><strong>Best Pick</strong> The QB pairing of Mahomes with Daniel Jones might be the best ceiling/floor pairing in superflex leagues I’ve seen</p>
-<p><strong>Worst Pick</strong> George Kittle might’ve been a reach in round before he was hurt going into week 1</p>
+<p>As Ryge finally conquered his first championship, Eric and Neal now
+share the prestigious title for longest tenured members without a title.
+With one more playoff appearance to his name, slightly better scheduling
+luck, and a better recent draft history capped off with a shining Deebo
+Samuel pick a year ago, I’d give Eric slightly better odds to break the
+drought before Neal. It remains just one more venue for their seemingly
+never ending contest of fierce, but friendly competitions.</p>
+<p><strong>Team Name</strong> 5/5 good enough to save our
+<a href="https://www.youtube.com/watch?v=4ctK1aoWuqY">planet</a></p>
+<p><strong>Best Pick</strong> The QB pairing of Mahomes with Daniel Jones might be the
+best ceiling/floor pairing in superflex leagues I’ve seen</p>
+<p><strong>Worst Pick</strong> George Kittle might’ve been a reach in round before he
+was hurt going into week 1</p>
 <h2 id="moremooney-marrproblems---lizandro">MoreMooney ’MarrProblems - Lizandro</h2>
-<p>Lizandro must model his fantasy squad after his favorite teams - struggling to score and lucky to win 40% of his games. He holds the title for the lowest active all-play win % in the league at almost 45%. Hoping to build on last year’s 3rd place finish the bar is in hell for Lizandro to have a relevant season.</p>
-<p><strong>Team Name</strong> 8/5 A yearly bright spot in combining as many player names as possible Lizandro has outdone himself with this masterpiece</p>
-<p><strong>Best Pick</strong> Going back to the same well I’ll say the dynamic QB duo of Hurts and Dak, Lizandro drained the last of the elite QB tier before passing the league his leftovers</p>
-<p><strong>Worst Pick</strong> Ja’Marr Chase - was it worth passing on league winning CMC just for your team name? Yeah, probably</p>
+<p>Lizandro must model his fantasy squad after his favorite teams -
+struggling to score and lucky to win 40% of his games. He holds the
+title for the lowest active all-play win % in the league at almost 45%.
+Hoping to build on last year’s 3rd place finish the bar is in hell for
+Lizandro to have a relevant season.</p>
+<p><strong>Team Name</strong> 8/5 A yearly bright spot in combining as many player names
+as possible Lizandro has outdone himself with this masterpiece</p>
+<p><strong>Best Pick</strong> Going back to the same well I’ll say the dynamic QB duo of
+Hurts and Dak, Lizandro drained the last of the elite QB tier before
+passing the league his leftovers</p>
+<p><strong>Worst Pick</strong> Ja’Marr Chase - was it worth passing on league winning
+CMC just for your team name? Yeah, probably</p>
 <h2 id="team-name-pending---scottie-dubs">Team Name Pending - Scottie Dubs</h2>
-<p>One in 4 universes in the multiverse are probably dealing with a fate worse than Thanos’ snap… Scott really has been that close to 3-peting after following up his championship run in 2020 with 2 2nd place finishes. With a mind boggling 65% all-play win% only his terrible scheduling luck might’ve been holding him back. While the fates play with his team’s schedule they bless his team with immaculate injury luck. Scott’s 1st round picks have combined to miss 0 games in 4 years. The 20 players he’s taken in the top 5 rounds have missed only 22 games or about 1 game per player per season. At some point we’re gonna send Josh with tire iron to fix this trend.</p>
-<p><strong>Team Name</strong> Fucking 0/5 That’s weird I don’t see Stafford on your team anywhere</p>
-<p><strong>Best Pick</strong> Gabe Davis - the man caught 10 balls for 200 yards and 4 TDs in the best game I’ve ever seen. He’s got the juice.</p>
-<p><strong>Worst Pick</strong> Travis Kelce - if you’re gonna be the first one to draft a TE you better make sure it’s the best TE</p>
+<p>One in 4 universes in the multiverse are probably dealing with a fate
+worse than Thanos’ snap… Scott really has been that close to 3-peting
+after following up his championship run in 2020 with 2 2nd place
+finishes. With a mind boggling 65% all-play win% only his terrible
+scheduling luck might’ve been holding him back. While the fates play
+with his team’s schedule they bless his team with immaculate injury
+luck. Scott’s 1st round picks have combined to miss 0 games in 4 years.
+The 20 players he’s taken in the top 5 rounds have missed only 22 games
+or about 1 game per player per season. At some point we’re gonna send
+Josh with tire iron to fix this trend.</p>
+<p><strong>Team Name</strong> Fucking 0/5 That’s weird I don’t see Stafford on your team
+anywhere</p>
+<p><strong>Best Pick</strong> Gabe Davis - the man caught 10 balls for 200 yards and 4
+TDs in the best game I’ve ever seen. He’s got the juice.</p>
+<p><strong>Worst Pick</strong> Travis Kelce - if you’re gonna be the first one to draft
+a TE you better make sure it’s the best TE</p>
 <h2 id="armed-rodgery---ryge">Armed Rodgery - Ryge</h2>
-<p>In only his 2nd playoff appearance of the past 7 years Ryan managed to defy all expectations and claim his first title. A draft for the record books Ryan somehow managed to snag FOUR (4) fucking players that went in the first round of this draft (Kyler, JT, Chase, and Justin Jefferson). I’ve heard of the blind squirrel finding a nut before, but I’ve never seen such a blind squirrel find Blackbeard’s lost fucking treasure and spend the gold to not only fix his eyesight but also get laser eyes and live in a squirrel penthouse with a harem of squirrel harlots. It’s a hard act to follow.</p>
+<p>In only his 2nd playoff appearance of the past 7 years Ryan managed to
+defy all expectations and claim his first title. A draft for the record
+books Ryan somehow managed to snag FOUR (4) fucking players that went in
+the first round of this draft (Kyler, JT, Chase, and Justin Jefferson).
+I’ve heard of the blind squirrel finding a nut before, but I’ve never
+seen such a blind squirrel find Blackbeard’s lost fucking treasure and
+spend the gold to not only fix his eyesight but also get laser eyes and
+live in a squirrel penthouse with a harem of squirrel harlots. It’s a
+hard act to follow.</p>
 <p><strong>Team Name</strong> 3/5 It’s good, but give me 4 laps around the gym</p>
-<p><strong>Best Pick</strong> Playoff Lenny - Ryan goes back to the well after hitting big on him a year ago and still gets a great value</p>
-<p><strong>Worst Pick</strong> DK Metcalf - listen, I’ve watched Geno Smith play QB more than anyone should have to and that’s not a road you want to go down</p>
+<p><strong>Best Pick</strong> Playoff Lenny - Ryan goes back to the well after hitting
+big on him a year ago and still gets a great value</p>
+<p><strong>Worst Pick</strong> DK Metcalf - listen, I’ve watched Geno Smith play QB more
+than anyone should have to and that’s not a road you want to go down</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->

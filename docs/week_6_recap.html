@@ -23,6 +23,7 @@
 pre > code.sourceCode { white-space: pre; position: relative; }
 pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
 div.sourceCode { margin: 1em 0; }
 pre.sourceCode { margin: 0; }
@@ -49,16 +50,17 @@ pre.numberSource code > span > a:first-child::before
   }
 pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
 div.sourceCode
-  {   }
+  { color: #00769e; background-color: #f1f3f5; }
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
+code span { color: #00769e; } /* Normal */
 code span.al { color: #ad0000; } /* Alert */
 code span.an { color: #5e5e5e; } /* Annotation */
-code span.at { color: #20794d; } /* Attribute */
+code span.at { color: #657422; } /* Attribute */
 code span.bn { color: #ad0000; } /* BaseN */
 code span.bu { } /* BuiltIn */
-code span.cf { color: #007ba5; } /* ControlFlow */
+code span.cf { color: #00769e; } /* ControlFlow */
 code span.ch { color: #20794d; } /* Char */
 code span.cn { color: #8f5902; } /* Constant */
 code span.co { color: #5e5e5e; } /* Comment */
@@ -72,17 +74,18 @@ code span.fl { color: #ad0000; } /* Float */
 code span.fu { color: #4758ab; } /* Function */
 code span.im { } /* Import */
 code span.in { color: #5e5e5e; } /* Information */
-code span.kw { color: #007ba5; } /* Keyword */
+code span.kw { color: #00769e; } /* Keyword */
 code span.op { color: #5e5e5e; } /* Operator */
-code span.ot { color: #007ba5; } /* Other */
+code span.ot { color: #00769e; } /* Other */
 code span.pp { color: #ad0000; } /* Preprocessor */
-code span.sc { color: #20794d; } /* SpecialChar */
+code span.sc { color: #5e5e5e; } /* SpecialChar */
 code span.ss { color: #20794d; } /* SpecialString */
 code span.st { color: #20794d; } /* String */
 code span.va { color: #111111; } /* Variable */
 code span.vs { color: #20794d; } /* VerbatimString */
 code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </style>
+
 
   <!--radix_placeholder_meta_tags-->
   <title>Fantasy League of Ex-Athletes: Week 6 Recap</title>
@@ -786,6 +789,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article table.gt_table td,
   d-article table.gt_table th {
     border-bottom: none;
+    font-size: 100%;
   }
 
   .html-widget {
@@ -1027,10 +1031,6 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     position: relative;
     margin-bottom: 2.5em;
     margin-top: 1.5em;
-  }
-
-  .figure img {
-    width: 100%;
   }
 
   .figure .caption {
@@ -1862,7 +1862,22 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
       // hoverable references
       $('span.citation[data-cites]').each(function() {
-        var refHtml = $('#ref-' + $(this).attr('data-cites')).html();
+        const citeChild = $(this).children()[0]
+        // Do not process if @xyz has been used without escaping and without bibliography activated
+        // https://github.com/rstudio/distill/issues/466
+        if (citeChild === undefined) return true
+
+        if (citeChild.nodeName == "D-FOOTNOTE") {
+          var fn = citeChild
+          $(this).html(fn.shadowRoot.querySelector("sup"))
+          $(this).id = fn.id
+          fn.remove()
+        }
+        var refs = $(this).attr('data-cites').split(" ");
+        var refHtml = refs.map(function(ref) {
+          // Could use CSS.escape too here, we insure backward compatibility in navigator
+          return "<p>" + $('div[id="ref-' + ref + '"]').html() + "</p>";
+        }).join("\n");
         window.tippy(this, {
           allowHTML: true,
           content: refHtml,
@@ -1873,6 +1888,31 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
           placement: 'bottom-start'
         });
       });
+
+      // fix footnotes in tables (#411)
+      // replacing broken distill.pub feature
+      $('table d-footnote').each(function() {
+        // we replace internal showAtNode methode which is triggered when hovering a footnote
+        this.hoverBox.showAtNode = function(node) {
+          // ported from https://github.com/distillpub/template/pull/105/files
+          calcOffset = function(elem) {
+              let x = elem.offsetLeft;
+              let y = elem.offsetTop;
+              // Traverse upwards until an `absolute` element is found or `elem`
+              // becomes null.
+              while (elem = elem.offsetParent && elem.style.position != 'absolute') {
+                  x += elem.offsetLeft;
+                  y += elem.offsetTop;
+              }
+
+              return { left: x, top: y };
+          }
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLElement/offsetTop
+          const bbox = node.getBoundingClientRect();
+          const offset = calcOffset(node);
+          this.show([offset.left + bbox.width, offset.top + bbox.height]);
+        }
+      })
 
       // clear polling timer
       clearInterval(tid);
@@ -1972,6 +2012,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // mark non-body figures created by knitr chunks as 100% width
     $('.layout-chunk').each(function(i, val) {
       var figures = $(this).find('img, .html-widget');
+      // ignore leaflet img layers (#106)
+      figures = figures.filter(':not(img[class*="leaflet"])')
       if ($(this).attr('data-layout') !== "l-body") {
         figures.css('width', '100%');
       } else {
@@ -1994,7 +2036,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // get rid of index.html references in header
     if (window.location.protocol !== "file:") {
       $('.distill-site-header a[href]').each(function(i,val) {
-        $(this).attr('href', $(this).attr('href').replace("index.html", "./"));
+        $(this).attr('href', $(this).attr('href').replace(/^index[.]html/, "./"));
       });
     }
 
@@ -2066,7 +2108,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <div class="nav-right">
 <a href="index.html">Home</a>
 <a href="draft_recap_2022.html">2022 Draft Recap</a>
-<a href="https://sleeper.app/leagues/863895883606056960">Sleeper Link</a>
+<a href="season_recap_2022.html">2022 Season Recap</a>
+<a href="https://sleeper.app/leagues/863895883606056960">Sleeper Link - 2022</a>
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
 2021 Season
@@ -2074,7 +2117,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="https://sleeper.app/leagues/739986523688230912">Sleeper Link</a>
+<a href="https://sleeper.app/leagues/739986523688230912">Sleeper Link - 2021</a>
 <a href="simulations-2021.html">Preseason Simulations</a>
 <a href="draft_recap.html">Draft Recap</a>
 <a href="week_3_recap.html">Week 3 Recap</a>
@@ -2108,19 +2151,19 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <nav class="l-text toc figcaption" id="TOC">
 <h3>Contents</h3>
 <ul>
-<li><a href="#joe-why-is-kamara-1-5">1. Joe (Why is Kamara?) 1-5</a></li>
-<li><a href="#liz-jonesing-for-a-godwin-2-4">2. Liz (Jonesing for a Godwin) 2-4</a></li>
-<li><a href="#anthony-anthonyclay-2-4">3. Anthony (AnthonyClay) 2-4</a></li>
-<li><a href="#neal-3-2-2-4">4. Neal (3-2) 2-4</a></li>
-<li><a href="#nick-mahomies-like-espn-more-2-4">5. Nick (Mahomies Like ESPN More) 2-4</a></li>
-<li><a href="#ty-cookin-up-some-losses-3-3">6. Ty (Cookin’ up Some Losses) 3-3</a></li>
-<li><a href="#josh-running-it-dak-3-3">7. Josh (Running it Dak) 3-3</a></li>
-<li><a href="#terry-thielen-up-my-cousins-3-3">8. Terry (Thielen up my Cousins) 3-3</a></li>
-<li><a href="#eric-full-chuba-4-2">9. Eric (Full Chuba) 4-2</a></li>
-<li><a href="#jon-ceedeeznutz-ha-4-2">10. Jon (CeeDeezNutz [HA!]) 4-2</a></li>
-<li><a href="#scott-inglorious-staffords-4-2">11. Scott (Inglorious Staffords) 4-2</a></li>
-<li><a href="#ryge-kyler-the-creator-6-0">12. Ryge (Kyler, The Creator) 6-0</a></li>
-<li><a href="#true-rankings">True Rankings:</a></li>
+<li><a href="#joe-why-is-kamara-1-5" id="toc-joe-why-is-kamara-1-5">1. Joe (Why is Kamara?) 1-5</a></li>
+<li><a href="#liz-jonesing-for-a-godwin-2-4" id="toc-liz-jonesing-for-a-godwin-2-4">2. Liz (Jonesing for a Godwin) 2-4</a></li>
+<li><a href="#anthony-anthonyclay-2-4" id="toc-anthony-anthonyclay-2-4">3. Anthony (AnthonyClay) 2-4</a></li>
+<li><a href="#neal-3-2-2-4" id="toc-neal-3-2-2-4">4. Neal (3-2) 2-4</a></li>
+<li><a href="#nick-mahomies-like-espn-more-2-4" id="toc-nick-mahomies-like-espn-more-2-4">5. Nick (Mahomies Like ESPN More) 2-4</a></li>
+<li><a href="#ty-cookin-up-some-losses-3-3" id="toc-ty-cookin-up-some-losses-3-3">6. Ty (Cookin’ up Some Losses) 3-3</a></li>
+<li><a href="#josh-running-it-dak-3-3" id="toc-josh-running-it-dak-3-3">7. Josh (Running it Dak) 3-3</a></li>
+<li><a href="#terry-thielen-up-my-cousins-3-3" id="toc-terry-thielen-up-my-cousins-3-3">8. Terry (Thielen up my Cousins) 3-3</a></li>
+<li><a href="#eric-full-chuba-4-2" id="toc-eric-full-chuba-4-2">9. Eric (Full Chuba) 4-2</a></li>
+<li><a href="#jon-ceedeeznutz-ha-4-2" id="toc-jon-ceedeeznutz-ha-4-2">10. Jon (CeeDeezNutz [HA!]) 4-2</a></li>
+<li><a href="#scott-inglorious-staffords-4-2" id="toc-scott-inglorious-staffords-4-2">11. Scott (Inglorious Staffords) 4-2</a></li>
+<li><a href="#ryge-kyler-the-creator-6-0" id="toc-ryge-kyler-the-creator-6-0">12. Ryge (Kyler, The Creator) 6-0</a></li>
+<li><a href="#true-rankings" id="toc-true-rankings">True Rankings:</a></li>
 </ul>
 </nav>
 </div>

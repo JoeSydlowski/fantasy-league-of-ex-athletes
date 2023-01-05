@@ -14,9 +14,10 @@ library(gt)
 library(RColorBrewer)
 library(emoji)
 library(here)
+library(glue)
 setwd(here())
 
-flea_df <- readRDS("data/flea_df.RDS") %>% 
+flea_df <- readRDS("data/flea_df_2022.RDS") %>% 
   rowwise() %>% 
   mutate(best_headshot = best_headshot[1],
          worst_headshot = worst_headshot[1]) %>% 
@@ -25,13 +26,16 @@ flea_df <- readRDS("data/flea_df.RDS") %>%
 
 
 ```{r layout = "l-page"}
+start_year <- 2015
+end_year <- 2022
+
 flea_df %>% 
   gt() %>%
-  tab_header(title = "League History (2015-2021)") %>%
+  tab_header(title = "League History (2015-2022)") %>%
   cols_label(user_name = "Team",
              # years = "Seasons",
              # pick_year = "Draft Slots",
-             emoji_collase = "Finish History",
+             emoji_collase = glue::glue("{start_year}\U2192{end_year}"),
              allplay_winpct = "All-play Win %",
              h2h_winpct = "Win %",
              luck_pct = "Luck %",
@@ -89,7 +93,7 @@ flea_df %>%
                locations = cells_column_labels(columns = injury_value_oe)) %>% 
   tab_footnote(footnote = "Value returned on each draft pick",
                locations = cells_column_labels(columns = draft_value_oe)) %>% 
-  tab_source_note(source_note = emoji_glue("Best Team :trophy:, 2nd Place :2nd_place_medal:, 3rd Place :3rd_place_medal:, Playoffs :flexed_biceps:, Missed Playoffs :wastebasket:, Worst Team :taco:, Didn't Play :black_square_button:"))
+  tab_source_note(source_note = emoji_glue(":trophy: Best Team, :2nd_place_medal: 2nd Place, :3rd_place_medal: 3rd Place, :flexed_biceps: Playoffs, :wastebasket: Missed Playoffs, :taco: Worst Team, :black_square_button: Didn't Play"))
 
 
 ```
