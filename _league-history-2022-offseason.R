@@ -463,7 +463,7 @@ standings_history <-
                                   league_rank == 12 ~ emoji("taco"),
                                   TRUE ~ emoji("wastebasket"))) %>% 
   group_by(user_name) %>% 
-  summarise(across(.cols = c(h2h_wins, h2h_losses, h2h_ties, allplay_wins, allplay_losses),
+  summarise(across(.cols = c(h2h_wins, h2h_losses, h2h_ties, allplay_wins, allplay_losses, points_for),
                    .fns = ~sum(.x, na.rm = TRUE)),
             emoji_collase = paste(finish_emoji, sep = "", collapse = ""),
             h2h_winpct = h2h_wins / (h2h_wins + h2h_losses + h2h_ties),
