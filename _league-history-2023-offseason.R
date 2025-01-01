@@ -246,7 +246,7 @@ espn_scoring_history <-
                                   TRUE ~ platform_id))
 
 sleeper_scoring_history <- 
-  ff_scoringhistory(sleeper_conn, season = 2021:2022) %>%
+  ff_scoringhistory(sleeper_conn, season = 2021:2023) %>%
   filter(week <= 17, pos %in% c("QB","RB","WR","TE")) %>% 
   rename(platform_id = sleeper_id)
 
@@ -470,7 +470,7 @@ standings_unnested <- standings_nested %>%
 playoffs_nested <- league_id_history %>% 
   
   # JOE LOOK HERE PLEASE
-  filter(season <= 2022) |> 
+  # filter(season <= 2022) |> 
   mutate(playoff_standings = map2(.x = league_id,
                                   .y = season,
                                   .f = get_sleeper_playoffs))
@@ -507,7 +507,7 @@ standings_history_combined <-
 
 blank_emojis <- 
   crossing(user_name = unique(standings_history_combined$user_name),
-           season = c(2015:2022))
+           season = c(2015:2023))
 
 standings_history <- 
   blank_emojis %>% 
@@ -544,4 +544,4 @@ flea_df <-
   arrange(-first_place, -allplay_wins) %>% 
   select(-c(first_place, last_season, pick_year, allplay_wins))
 
-saveRDS(flea_df, "data/flea_df_2022.RDS")
+saveRDS(flea_df, "data/flea_df_2023.RDS")

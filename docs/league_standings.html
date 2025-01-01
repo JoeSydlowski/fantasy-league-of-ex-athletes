@@ -458,8 +458,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </style>
 
   <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-  <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
-  <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.4.2/css/all.min.css" rel="stylesheet"/>
+  <link href="site_libs/font-awesome-6.4.2/css/v4-shims.min.css" rel="stylesheet"/>
   <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
   <script src="site_libs/autocomplete-0.37.1/autocomplete.min.js"></script>
   <script src="site_libs/fuse-6.4.1/fuse.min.js"></script>
@@ -829,9 +829,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     display: none !important;
   }
 
+  hr.section-separator {
+    border: none;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+    margin: 0px;
+  }
+
+
+  d-byline {
+    border-top: none;
+  }
+
   d-article {
     padding-top: 2.5rem;
     padding-bottom: 30px;
+    border-top: none;
   }
 
   d-appendix {
@@ -926,6 +938,11 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   d-article div.sourceCode pre {
     padding-left: 18px;
     font-size: 14px;
+  }
+
+  /* tweak for Pandoc numbered line within distill */
+  d-article pre.numberSource code > span {
+      left: -2em;
   }
 
   d-article pre {
@@ -1687,6 +1704,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     // create d-title
     $('.d-title').changeElementType('d-title');
 
+    // separator
+    var separator = '<hr class="section-separator" style="clear: both"/>';
+    // prepend separator above appendix
+    $('.d-byline').before(separator);
+    $('.d-article').before(separator);
+
     // create d-byline
     var byline = $('<d-byline></d-byline>');
     $('.d-byline').replaceWith(byline);
@@ -1764,8 +1787,9 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     $('.distill-force-highlighting-css').parent().remove();
 
     // remove empty line numbers inserted by pandoc when using a
-    // custom syntax highlighting theme
-    $('code.sourceCode a:empty').remove();
+    // custom syntax highlighting theme, except when numbering line
+    // in code chunk
+    $('pre:not(.numberLines) code.sourceCode a:empty').remove();
 
     // load distill framework
     load_distill_framework();
@@ -1791,12 +1815,13 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
       // add orcid ids
       $('.authors-affiliations').find('.author').each(function(i, el) {
         var orcid_id = front_matter.authors[i].orcidID;
+        var author_name = front_matter.authors[i].author
         if (orcid_id) {
           var a = $('<a></a>');
           a.attr('href', 'https://orcid.org/' + orcid_id);
           var img = $('<img></img>');
           img.addClass('orcid-id');
-          img.attr('alt', 'ORCID ID');
+          img.attr('alt', author_name ? 'ORCID ID for ' + author_name : 'ORCID ID');
           img.attr('src','data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA2ZpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDo1N0NEMjA4MDI1MjA2ODExOTk0QzkzNTEzRjZEQTg1NyIgeG1wTU06RG9jdW1lbnRJRD0ieG1wLmRpZDozM0NDOEJGNEZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDozM0NDOEJGM0ZGNTcxMUUxODdBOEVCODg2RjdCQ0QwOSIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ1M1IE1hY2ludG9zaCI+IDx4bXBNTTpEZXJpdmVkRnJvbSBzdFJlZjppbnN0YW5jZUlEPSJ4bXAuaWlkOkZDN0YxMTc0MDcyMDY4MTE5NUZFRDc5MUM2MUUwNEREIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjU3Q0QyMDgwMjUyMDY4MTE5OTRDOTM1MTNGNkRBODU3Ii8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+84NovQAAAR1JREFUeNpiZEADy85ZJgCpeCB2QJM6AMQLo4yOL0AWZETSqACk1gOxAQN+cAGIA4EGPQBxmJA0nwdpjjQ8xqArmczw5tMHXAaALDgP1QMxAGqzAAPxQACqh4ER6uf5MBlkm0X4EGayMfMw/Pr7Bd2gRBZogMFBrv01hisv5jLsv9nLAPIOMnjy8RDDyYctyAbFM2EJbRQw+aAWw/LzVgx7b+cwCHKqMhjJFCBLOzAR6+lXX84xnHjYyqAo5IUizkRCwIENQQckGSDGY4TVgAPEaraQr2a4/24bSuoExcJCfAEJihXkWDj3ZAKy9EJGaEo8T0QSxkjSwORsCAuDQCD+QILmD1A9kECEZgxDaEZhICIzGcIyEyOl2RkgwAAhkmC+eAm0TAAAAABJRU5ErkJggg==');
           a.append(img);
           $(this).append(a);
@@ -2074,7 +2099,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.16/header-attrs.js"></script>
+  <script src="site_libs/header-attrs-2.25/header-attrs.js"></script>
   <script src="site_libs/popper-2.6.0/popper.min.js"></script>
   <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
   <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
@@ -2106,9 +2131,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 </div>
 <div class="nav-right">
 <a href="index.html">Home</a>
-<a href="draft_recap_2022.html">2022 Draft Recap</a>
-<a href="season_recap_2022.html">2022 Season Recap</a>
-<a href="https://sleeper.app/leagues/863895883606056960">Sleeper Link - 2022</a>
+<a href="week_4_preview_2023.html">Week 4 Preview</a>
+<a href="https://sleeper.com/leagues/992218207261597696">Sleeper Link - 2023</a>
 <div class="nav-dropdown">
 <button class="nav-dropbtn">
 2021 Season
@@ -2116,11 +2140,23 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <span class="down-arrow">&#x25BE;</span>
 </button>
 <div class="nav-dropdown-content">
-<a href="https://sleeper.app/leagues/739986523688230912">Sleeper Link - 2021</a>
+<a href="https://sleeper.com/leagues/739986523688230912">Sleeper Link - 2021</a>
 <a href="simulations-2021.html">Preseason Simulations</a>
 <a href="draft_recap.html">Draft Recap</a>
 <a href="week_3_recap.html">Week 3 Recap</a>
 <a href="week_6_recap.html">Week 6 Recap</a>
+</div>
+</div>
+<div class="nav-dropdown">
+<button class="nav-dropbtn">
+2022 Season
+ 
+<span class="down-arrow">&#x25BE;</span>
+</button>
+<div class="nav-dropdown-content">
+<a href="https://sleeper.com/leagues/863895883606056960">Sleeper Link - 2022</a>
+<a href="draft_recap_2022.html">2022 Draft Recap</a>
+<a href="season_recap_2022.html">2022 Season Recap</a>
 </div>
 </div>
 <a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
@@ -2133,6 +2169,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 <div class="d-title">
 <h1>Fantasy League of Ex-Athletes</h1>
+
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
 <p><p>Standings through week 13</p></p>
@@ -2141,14 +2178,26 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 <div class="d-article">
 <div class="layout-chunk" data-layout="l-page">
-<div id="tgrljfzmqp" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
+<div id="mockykaygf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#mockykaygf table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-#tgrljfzmqp .gt_table {
+#mockykaygf thead, #mockykaygf tbody, #mockykaygf tfoot, #mockykaygf tr, #mockykaygf td, #mockykaygf th {
+  border-style: none;
+}
+
+#mockykaygf p {
+  margin: 0;
+  padding: 0;
+}
+
+#mockykaygf .gt_table {
   display: table;
   border-collapse: collapse;
+  line-height: normal;
   margin-left: auto;
   margin-right: auto;
   color: #333333;
@@ -2171,19 +2220,12 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-left-color: #D3D3D3;
 }
 
-#tgrljfzmqp .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
+#mockykaygf .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
 }
 
-#tgrljfzmqp .gt_title {
+#mockykaygf .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -2195,25 +2237,37 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-bottom-width: 0;
 }
 
-#tgrljfzmqp .gt_subtitle {
+#mockykaygf .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
-  padding-top: 0;
-  padding-bottom: 6px;
+  padding-top: 3px;
+  padding-bottom: 5px;
   padding-left: 5px;
   padding-right: 5px;
   border-top-color: #FFFFFF;
   border-top-width: 0;
 }
 
-#tgrljfzmqp .gt_bottom_border {
+#mockykaygf .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#mockykaygf .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#tgrljfzmqp .gt_col_headings {
+#mockykaygf .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2228,7 +2282,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-right-color: #D3D3D3;
 }
 
-#tgrljfzmqp .gt_col_heading {
+#mockykaygf .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2248,7 +2302,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   overflow-x: hidden;
 }
 
-#tgrljfzmqp .gt_column_spanner_outer {
+#mockykaygf .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2260,15 +2314,15 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 4px;
 }
 
-#tgrljfzmqp .gt_column_spanner_outer:first-child {
+#mockykaygf .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#tgrljfzmqp .gt_column_spanner_outer:last-child {
+#mockykaygf .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#tgrljfzmqp .gt_column_spanner {
+#mockykaygf .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -2280,7 +2334,11 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   width: 100%;
 }
 
-#tgrljfzmqp .gt_group_heading {
+#mockykaygf .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#mockykaygf .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2303,9 +2361,10 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-right-width: 1px;
   border-right-color: #D3D3D3;
   vertical-align: middle;
+  text-align: left;
 }
 
-#tgrljfzmqp .gt_empty_group_heading {
+#mockykaygf .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -2320,15 +2379,15 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   vertical-align: middle;
 }
 
-#tgrljfzmqp .gt_from_md > :first-child {
+#mockykaygf .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#tgrljfzmqp .gt_from_md > :last-child {
+#mockykaygf .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#tgrljfzmqp .gt_row {
+#mockykaygf .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2347,7 +2406,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   overflow-x: hidden;
 }
 
-#tgrljfzmqp .gt_stub {
+#mockykaygf .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2360,7 +2419,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 5px;
 }
 
-#tgrljfzmqp .gt_stub_row_group {
+#mockykaygf .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -2374,11 +2433,15 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   vertical-align: top;
 }
 
-#tgrljfzmqp .gt_row_group_first td {
+#mockykaygf .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#tgrljfzmqp .gt_summary_row {
+#mockykaygf .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#mockykaygf .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2388,16 +2451,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 5px;
 }
 
-#tgrljfzmqp .gt_first_summary_row {
+#mockykaygf .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#tgrljfzmqp .gt_first_summary_row.thick {
+#mockykaygf .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#tgrljfzmqp .gt_last_summary_row {
+#mockykaygf .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2407,7 +2470,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-bottom-color: #D3D3D3;
 }
 
-#tgrljfzmqp .gt_grand_summary_row {
+#mockykaygf .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -2417,7 +2480,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 5px;
 }
 
-#tgrljfzmqp .gt_first_grand_summary_row {
+#mockykaygf .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -2427,11 +2490,21 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-top-color: #D3D3D3;
 }
 
-#tgrljfzmqp .gt_striped {
+#mockykaygf .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mockykaygf .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#tgrljfzmqp .gt_table_body {
+#mockykaygf .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -2440,7 +2513,7 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-bottom-color: #D3D3D3;
 }
 
-#tgrljfzmqp .gt_footnotes {
+#mockykaygf .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -2454,30 +2527,8 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   border-right-color: #D3D3D3;
 }
 
-#tgrljfzmqp .gt_footnote {
+#mockykaygf .gt_footnote {
   margin: 0px;
-  font-size: 90%;
-  padding-left: 4px;
-  padding-right: 4px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#tgrljfzmqp .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#tgrljfzmqp .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -2485,68 +2536,89 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   padding-right: 5px;
 }
 
-#tgrljfzmqp .gt_left {
+#mockykaygf .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#mockykaygf .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mockykaygf .gt_left {
   text-align: left;
 }
 
-#tgrljfzmqp .gt_center {
+#mockykaygf .gt_center {
   text-align: center;
 }
 
-#tgrljfzmqp .gt_right {
+#mockykaygf .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#tgrljfzmqp .gt_font_normal {
+#mockykaygf .gt_font_normal {
   font-weight: normal;
 }
 
-#tgrljfzmqp .gt_font_bold {
+#mockykaygf .gt_font_bold {
   font-weight: bold;
 }
 
-#tgrljfzmqp .gt_font_italic {
+#mockykaygf .gt_font_italic {
   font-style: italic;
 }
 
-#tgrljfzmqp .gt_super {
+#mockykaygf .gt_super {
   font-size: 65%;
 }
 
-#tgrljfzmqp .gt_footnote_marks {
-  font-style: italic;
-  font-weight: normal;
+#mockykaygf .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
+  position: initial;
 }
 
-#tgrljfzmqp .gt_asterisk {
+#mockykaygf .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#tgrljfzmqp .gt_indent_1 {
+#mockykaygf .gt_indent_1 {
   text-indent: 5px;
 }
 
-#tgrljfzmqp .gt_indent_2 {
+#mockykaygf .gt_indent_2 {
   text-indent: 10px;
 }
 
-#tgrljfzmqp .gt_indent_3 {
+#mockykaygf .gt_indent_3 {
   text-indent: 15px;
 }
 
-#tgrljfzmqp .gt_indent_4 {
+#mockykaygf .gt_indent_4 {
   text-indent: 20px;
 }
 
-#tgrljfzmqp .gt_indent_5 {
+#mockykaygf .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
-<table class="gt_table" style="table-layout: fixed;">
+<table class="gt_table" style="table-layout: fixed;" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
   <colgroup>
     <col/>
     <col/>
@@ -2562,215 +2634,213 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
     <col style="width:55px;"/>
     <col style="width:55px;"/>
   </colgroup>
-  <thead class="gt_header">
-    <tr>
+  <thead>
+    <tr class="gt_heading">
       <td colspan="13" class="gt_heading gt_title gt_font_normal gt_bottom_border" style>League Standings 2021</td>
     </tr>
     
-  </thead>
-  <thead class="gt_col_headings">
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col">Team</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" scope="col">Seasons</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" scope="col">Finish History</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" scope="col">All-play Win %<sup class="gt_footnote_marks">1</sup></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" scope="col">Win %</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" scope="col">Luck %<sup class="gt_footnote_marks">2</sup></th>
-      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2" scope="colgroup">
+    <tr class="gt_col_headings gt_spanner_row">
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col" id="Team">Team</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" scope="col" id="Seasons">Seasons</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" scope="col" id="Finish History">Finish History</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" scope="col" id="All-play Win %&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;&gt;&lt;sup&gt;1&lt;/sup&gt;&lt;/span&gt;">All-play Win %<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" scope="col" id="Win %">Win %</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="2" colspan="1" scope="col" id="Luck %&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;&gt;&lt;sup&gt;2&lt;/sup&gt;&lt;/span&gt;">Luck %<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>2</sup></span></th>
+      <th class="gt_center gt_columns_top_border gt_column_spanner_outer" rowspan="1" colspan="2" scope="colgroup" id="Draft Value">
         <span class="gt_column_spanner">Draft Value</span>
       </th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col">Best Pick</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="2" colspan="1" scope="col"></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col">Worst Pick</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="2" colspan="1" scope="col"></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="2" colspan="1" scope="col">Top Drafted Team</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col" id="Best Pick">Best Pick</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="2" colspan="1" scope="col" id=""></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="2" colspan="1" scope="col" id="Worst Pick">Worst Pick</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="2" colspan="1" scope="col" id=""></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="2" colspan="1" scope="col" id="Top Drafted Team">Top Drafted Team</th>
     </tr>
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">Lost to Injury<sup class="gt_footnote_marks">3</sup></th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col">Over Expected<sup class="gt_footnote_marks">4</sup></th>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Lost to Injury&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;&gt;&lt;sup&gt;3&lt;/sup&gt;&lt;/span&gt;">Lost to Injury<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>3</sup></span></th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Over Expected&lt;span class=&quot;gt_footnote_marks&quot; style=&quot;white-space:nowrap;font-style:italic;font-weight:normal;&quot;&gt;&lt;sup&gt;4&lt;/sup&gt;&lt;/span&gt;">Over Expected<span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>4</sup></span></th>
     </tr>
   </thead>
   <tbody class="gt_table_body">
-    <tr><td class="gt_row gt_left">Rgalletti</td>
-<td class="gt_row gt_right">1</td>
-<td class="gt_row gt_right">🏆</td>
-<td class="gt_row gt_right" style="background-color: #A6DBA0; color: #000000;">79.0%</td>
-<td class="gt_row gt_right" style="background-color: #A6DBA0; color: #000000;">92.3%</td>
-<td class="gt_row gt_right" style="background-color: #C0E6B9; color: #000000;">13.3%</td>
-<td class="gt_row gt_right" style="background-color: #E4F3E0; color: #000000;">15.7%</td>
-<td class="gt_row gt_right" style="background-color: #A6DBA0; color: #000000;">52.9%</td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Leonard Fournette (2021)</div>
+    <tr><td headers="user_name" class="gt_row gt_left">Rgalletti</td>
+<td headers="years" class="gt_row gt_right">1</td>
+<td headers="emoji_collase" class="gt_row gt_right">🏆</td>
+<td headers="allplay_winpct" class="gt_row gt_right" style="background-color: #A6DBA0; color: #000000;">79.0%</td>
+<td headers="h2h_winpct" class="gt_row gt_right" style="background-color: #A6DBA0; color: #000000;">92.3%</td>
+<td headers="luck_pct" class="gt_row gt_right" style="background-color: #C0E6B9; color: #000000;">13.3%</td>
+<td headers="injury_value_oe" class="gt_row gt_right" style="background-color: #E4F3E0; color: #000000;">15.7%</td>
+<td headers="draft_value_oe" class="gt_row gt_right" style="background-color: #A6DBA0; color: #000000;">52.9%</td>
+<td headers="best_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Leonard Fournette (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted RB31 - Current RB6</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/jcmgyeiruehjjdpfkyf4" style="height:45px;"></td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Cole Kmet (2021)</div>
+<td headers="best_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/jcmgyeiruehjjdpfkyf4" style="height:45px;"></td>
+<td headers="worst_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Cole Kmet (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted TE16 - Current TE28</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/jqlaite1e6jmuaix5hoc" style="height:45px;"></td>
-<td class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/72/Arizona_Cardinals_logo.svg/179px-Arizona_Cardinals_logo.svg.png" style="height:45px;"></td></tr>
-    <tr><td class="gt_row gt_left">Ericbu</td>
-<td class="gt_row gt_right">1</td>
-<td class="gt_row gt_right">🥈</td>
-<td class="gt_row gt_right" style="background-color: #E4F3E0; color: #000000;">51.0%</td>
-<td class="gt_row gt_right" style="background-color: #D1EDCA; color: #000000;">69.2%</td>
-<td class="gt_row gt_right" style="background-color: #A6DBA0; color: #000000;">18.2%</td>
-<td class="gt_row gt_right" style="background-color: #BEA0CC; color: #000000;">25.8%</td>
-<td class="gt_row gt_right" style="background-color: #D4EECE; color: #000000;">15.7%</td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Deebo Samuel (2021)</div>
+<td headers="worst_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/jqlaite1e6jmuaix5hoc" style="height:45px;"></td>
+<td headers="team_logo_espn" class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/72/Arizona_Cardinals_logo.svg/179px-Arizona_Cardinals_logo.svg.png" style="height:45px;"></td></tr>
+    <tr><td headers="user_name" class="gt_row gt_left">Ericbu</td>
+<td headers="years" class="gt_row gt_right">1</td>
+<td headers="emoji_collase" class="gt_row gt_right">🥈</td>
+<td headers="allplay_winpct" class="gt_row gt_right" style="background-color: #E4F3E0; color: #000000;">51.0%</td>
+<td headers="h2h_winpct" class="gt_row gt_right" style="background-color: #D1EDCA; color: #000000;">69.2%</td>
+<td headers="luck_pct" class="gt_row gt_right" style="background-color: #A6DBA0; color: #000000;">18.2%</td>
+<td headers="injury_value_oe" class="gt_row gt_right" style="background-color: #BEA0CC; color: #000000;">25.8%</td>
+<td headers="draft_value_oe" class="gt_row gt_right" style="background-color: #D4EECE; color: #000000;">15.7%</td>
+<td headers="best_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Deebo Samuel (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted WR32 - Current WR2</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/ccgevhaduyc9llngcnlu" style="height:45px;"></td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Saquon Barkley (2021)</div>
+<td headers="best_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/ccgevhaduyc9llngcnlu" style="height:45px;"></td>
+<td headers="worst_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Saquon Barkley (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted RB5 - Current RB26</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/tmxfyxkmtrx42ei4qhvn" style="height:45px;"></td>
-<td class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/e1/Kansas_City_Chiefs_logo.svg/100px-Kansas_City_Chiefs_logo.svg.png" style="height:45px;"></td></tr>
-    <tr><td class="gt_row gt_left">Scottydontknovv</td>
-<td class="gt_row gt_right">1</td>
-<td class="gt_row gt_right">🥉</td>
-<td class="gt_row gt_right" style="background-color: #BDE5B7; color: #000000;">76.2%</td>
-<td class="gt_row gt_right" style="background-color: #EDF5EB; color: #000000;">61.5%</td>
-<td class="gt_row gt_right" style="background-color: #AD8ABD; color: #000000;">−14.7%</td>
-<td class="gt_row gt_right" style="background-color: #BDE5B7; color: #000000;">12.8%</td>
-<td class="gt_row gt_right" style="background-color: #BDE5B7; color: #000000;">43.3%</td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Cooper Kupp (2021)</div>
+<td headers="worst_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/tmxfyxkmtrx42ei4qhvn" style="height:45px;"></td>
+<td headers="team_logo_espn" class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/e1/Kansas_City_Chiefs_logo.svg/100px-Kansas_City_Chiefs_logo.svg.png" style="height:45px;"></td></tr>
+    <tr><td headers="user_name" class="gt_row gt_left">Scottydontknovv</td>
+<td headers="years" class="gt_row gt_right">1</td>
+<td headers="emoji_collase" class="gt_row gt_right">🥉</td>
+<td headers="allplay_winpct" class="gt_row gt_right" style="background-color: #BDE5B7; color: #000000;">76.2%</td>
+<td headers="h2h_winpct" class="gt_row gt_right" style="background-color: #EDF5EB; color: #000000;">61.5%</td>
+<td headers="luck_pct" class="gt_row gt_right" style="background-color: #AD8ABD; color: #FFFFFF;">−14.7%</td>
+<td headers="injury_value_oe" class="gt_row gt_right" style="background-color: #BDE5B7; color: #000000;">12.8%</td>
+<td headers="draft_value_oe" class="gt_row gt_right" style="background-color: #BDE5B7; color: #000000;">43.3%</td>
+<td headers="best_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Cooper Kupp (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted WR19 - Current WR1</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/jiaeufv3lpbkhulrddjq" style="height:45px;"></td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Robert Tonyan (2021)</div>
+<td headers="best_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/jiaeufv3lpbkhulrddjq" style="height:45px;"></td>
+<td headers="worst_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Robert Tonyan (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted TE9 - Current TE30</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/sz92gzueu4lezhvc6zgj" style="height:45px;"></td>
-<td class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/77/Buffalo_Bills_logo.svg/189px-Buffalo_Bills_logo.svg.png" style="height:45px;"></td></tr>
-    <tr><td class="gt_row gt_left">Jsydlow99ski</td>
-<td class="gt_row gt_right">1</td>
-<td class="gt_row gt_right">💪</td>
-<td class="gt_row gt_right" style="background-color: #F2F6F0; color: #000000;">49.7%</td>
-<td class="gt_row gt_right" style="background-color: #EFE5F0; color: #000000;">53.8%</td>
-<td class="gt_row gt_right" style="background-color: #F7F7F7; color: #000000;">4.2%</td>
-<td class="gt_row gt_right" style="background-color: #F3EDF3; color: #000000;">20.0%</td>
-<td class="gt_row gt_right" style="background-color: #E0CBE3; color: #000000;">−23.5%</td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Derrick Henry (2021)</div>
+<td headers="worst_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/sz92gzueu4lezhvc6zgj" style="height:45px;"></td>
+<td headers="team_logo_espn" class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/77/Buffalo_Bills_logo.svg/189px-Buffalo_Bills_logo.svg.png" style="height:45px;"></td></tr>
+    <tr><td headers="user_name" class="gt_row gt_left">Jsydlow99ski</td>
+<td headers="years" class="gt_row gt_right">1</td>
+<td headers="emoji_collase" class="gt_row gt_right">💪</td>
+<td headers="allplay_winpct" class="gt_row gt_right" style="background-color: #F2F6F0; color: #000000;">49.7%</td>
+<td headers="h2h_winpct" class="gt_row gt_right" style="background-color: #EFE5F0; color: #000000;">53.8%</td>
+<td headers="luck_pct" class="gt_row gt_right" style="background-color: #F7F7F7; color: #000000;">4.2%</td>
+<td headers="injury_value_oe" class="gt_row gt_right" style="background-color: #F3EDF3; color: #000000;">20.0%</td>
+<td headers="draft_value_oe" class="gt_row gt_right" style="background-color: #E0CBE3; color: #000000;">−23.5%</td>
+<td headers="best_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Derrick Henry (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted RB4 - Current RB1</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/ved7bttliyuaps02d77d" style="height:45px;"></td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>DK Metcalf (2021)</div>
+<td headers="best_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/ved7bttliyuaps02d77d" style="height:45px;"></td>
+<td headers="worst_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>DK Metcalf (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted WR6 - Current WR25</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/oa43ir8zoaiofwbupkrt" style="height:45px;"></td>
-<td class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/8/8e/Seattle_Seahawks_logo.svg/100px-Seattle_Seahawks_logo.svg.png" style="height:45px;"></td></tr>
-    <tr><td class="gt_row gt_left">Lizandros23</td>
-<td class="gt_row gt_right">1</td>
-<td class="gt_row gt_right">💪</td>
-<td class="gt_row gt_right" style="background-color: #F3EDF3; color: #000000;">49.0%</td>
-<td class="gt_row gt_right" style="background-color: #EFE5F0; color: #000000;">53.8%</td>
-<td class="gt_row gt_right" style="background-color: #E8F4E5; color: #000000;">4.9%</td>
-<td class="gt_row gt_right" style="background-color: #AC88BB; color: #000000;">27.8%</td>
-<td class="gt_row gt_right" style="background-color: #F3EDF3; color: #000000;">−7.3%</td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Chris Godwin (2021)</div>
+<td headers="worst_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/oa43ir8zoaiofwbupkrt" style="height:45px;"></td>
+<td headers="team_logo_espn" class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/8/8e/Seattle_Seahawks_logo.svg/100px-Seattle_Seahawks_logo.svg.png" style="height:45px;"></td></tr>
+    <tr><td headers="user_name" class="gt_row gt_left">Lizandros23</td>
+<td headers="years" class="gt_row gt_right">1</td>
+<td headers="emoji_collase" class="gt_row gt_right">💪</td>
+<td headers="allplay_winpct" class="gt_row gt_right" style="background-color: #F3EDF3; color: #000000;">49.0%</td>
+<td headers="h2h_winpct" class="gt_row gt_right" style="background-color: #EFE5F0; color: #000000;">53.8%</td>
+<td headers="luck_pct" class="gt_row gt_right" style="background-color: #E8F4E5; color: #000000;">4.9%</td>
+<td headers="injury_value_oe" class="gt_row gt_right" style="background-color: #AC88BB; color: #FFFFFF;">27.8%</td>
+<td headers="draft_value_oe" class="gt_row gt_right" style="background-color: #F3EDF3; color: #000000;">−7.3%</td>
+<td headers="best_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Chris Godwin (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted WR16 - Current WR8</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/ckwncz8djwnlo1miq1vq" style="height:45px;"></td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Christian McCaffrey (2021)</div>
+<td headers="best_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/ckwncz8djwnlo1miq1vq" style="height:45px;"></td>
+<td headers="worst_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Christian McCaffrey (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted RB1 - Current RB7</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/rmrohuw9tgfqlolewzvx" style="height:45px;"></td>
-<td class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/1c/Carolina_Panthers_logo.svg/100px-Carolina_Panthers_logo.svg.png" style="height:45px;"></td></tr>
-    <tr><td class="gt_row gt_left">Terryclark1991</td>
-<td class="gt_row gt_right">1</td>
-<td class="gt_row gt_right">💪</td>
-<td class="gt_row gt_right" style="background-color: #D4EECE; color: #000000;">59.4%</td>
-<td class="gt_row gt_right" style="background-color: #EFE5F0; color: #000000;">53.8%</td>
-<td class="gt_row gt_right" style="background-color: #D4BCDB; color: #000000;">−5.6%</td>
-<td class="gt_row gt_right" style="background-color: #A6DBA0; color: #000000;">11.6%</td>
-<td class="gt_row gt_right" style="background-color: #E4F3E0; color: #000000;">8.6%</td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Joe Mixon (2021)</div>
+<td headers="worst_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/rmrohuw9tgfqlolewzvx" style="height:45px;"></td>
+<td headers="team_logo_espn" class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/1c/Carolina_Panthers_logo.svg/100px-Carolina_Panthers_logo.svg.png" style="height:45px;"></td></tr>
+    <tr><td headers="user_name" class="gt_row gt_left">Terryclark1991</td>
+<td headers="years" class="gt_row gt_right">1</td>
+<td headers="emoji_collase" class="gt_row gt_right">💪</td>
+<td headers="allplay_winpct" class="gt_row gt_right" style="background-color: #D4EECE; color: #000000;">59.4%</td>
+<td headers="h2h_winpct" class="gt_row gt_right" style="background-color: #EFE5F0; color: #000000;">53.8%</td>
+<td headers="luck_pct" class="gt_row gt_right" style="background-color: #D4BCDB; color: #000000;">−5.6%</td>
+<td headers="injury_value_oe" class="gt_row gt_right" style="background-color: #A6DBA0; color: #000000;">11.6%</td>
+<td headers="draft_value_oe" class="gt_row gt_right" style="background-color: #E4F3E0; color: #000000;">8.6%</td>
+<td headers="best_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Joe Mixon (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted RB14 - Current RB5</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/pucb3gqsidpxzivdp9hd" style="height:45px;"></td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Aaron Jones (2021)</div>
+<td headers="best_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/pucb3gqsidpxzivdp9hd" style="height:45px;"></td>
+<td headers="worst_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Aaron Jones (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted RB8 - Current RB19</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/aspau9t4rjwirkedoz5o" style="height:45px;"></td>
-<td class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/16/Baltimore_Ravens_logo.svg/193px-Baltimore_Ravens_logo.svg.png" style="height:45px;"></td></tr>
-    <tr><td class="gt_row gt_left">Nickd1212</td>
-<td class="gt_row gt_right">1</td>
-<td class="gt_row gt_right">🗑️</td>
-<td class="gt_row gt_right" style="background-color: #E0CBE3; color: #000000;">45.5%</td>
-<td class="gt_row gt_right" style="background-color: #DBC4E0; color: #000000;">46.2%</td>
-<td class="gt_row gt_right" style="background-color: #E7D4E8; color: #000000;">0.7%</td>
-<td class="gt_row gt_right" style="background-color: #CFB6D8; color: #000000;">23.9%</td>
-<td class="gt_row gt_right" style="background-color: #AC88BB; color: #000000;">−40.6%</td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Michael Carter (2021)</div>
+<td headers="worst_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/aspau9t4rjwirkedoz5o" style="height:45px;"></td>
+<td headers="team_logo_espn" class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/1/16/Baltimore_Ravens_logo.svg/193px-Baltimore_Ravens_logo.svg.png" style="height:45px;"></td></tr>
+    <tr><td headers="user_name" class="gt_row gt_left">Nickd1212</td>
+<td headers="years" class="gt_row gt_right">1</td>
+<td headers="emoji_collase" class="gt_row gt_right">🗑️</td>
+<td headers="allplay_winpct" class="gt_row gt_right" style="background-color: #E0CBE3; color: #000000;">45.5%</td>
+<td headers="h2h_winpct" class="gt_row gt_right" style="background-color: #DBC4E0; color: #000000;">46.2%</td>
+<td headers="luck_pct" class="gt_row gt_right" style="background-color: #E7D4E8; color: #000000;">0.7%</td>
+<td headers="injury_value_oe" class="gt_row gt_right" style="background-color: #CFB6D8; color: #000000;">23.9%</td>
+<td headers="draft_value_oe" class="gt_row gt_right" style="background-color: #AC88BB; color: #FFFFFF;">−40.6%</td>
+<td headers="best_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Michael Carter (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted RB36 - Current RB23</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/wkcmseo5ayu4wydu1xig" style="height:45px;"></td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>DeAndre Hopkins (2021)</div>
+<td headers="best_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/wkcmseo5ayu4wydu1xig" style="height:45px;"></td>
+<td headers="worst_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>DeAndre Hopkins (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted WR4 - Current WR19</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/atxihl8g9xi6wextxbkw" style="height:45px;"></td>
-<td class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/e1/Kansas_City_Chiefs_logo.svg/100px-Kansas_City_Chiefs_logo.svg.png" style="height:45px;"></td></tr>
-    <tr><td class="gt_row gt_left">Sox05syd</td>
-<td class="gt_row gt_right">1</td>
-<td class="gt_row gt_right">🗑️</td>
-<td class="gt_row gt_right" style="background-color: #AC88BB; color: #000000;">38.5%</td>
-<td class="gt_row gt_right" style="background-color: #DBC4E0; color: #000000;">46.2%</td>
-<td class="gt_row gt_right" style="background-color: #D9F0D3; color: #000000;">7.7%</td>
-<td class="gt_row gt_right" style="background-color: #E0CBE3; color: #000000;">23.0%</td>
-<td class="gt_row gt_right" style="background-color: #BEA0CC; color: #000000;">−34.1%</td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Jimmy Garoppolo (2021)</div>
+<td headers="worst_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/atxihl8g9xi6wextxbkw" style="height:45px;"></td>
+<td headers="team_logo_espn" class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/e1/Kansas_City_Chiefs_logo.svg/100px-Kansas_City_Chiefs_logo.svg.png" style="height:45px;"></td></tr>
+    <tr><td headers="user_name" class="gt_row gt_left">Sox05syd</td>
+<td headers="years" class="gt_row gt_right">1</td>
+<td headers="emoji_collase" class="gt_row gt_right">🗑️</td>
+<td headers="allplay_winpct" class="gt_row gt_right" style="background-color: #AC88BB; color: #FFFFFF;">38.5%</td>
+<td headers="h2h_winpct" class="gt_row gt_right" style="background-color: #DBC4E0; color: #000000;">46.2%</td>
+<td headers="luck_pct" class="gt_row gt_right" style="background-color: #D9F0D3; color: #000000;">7.7%</td>
+<td headers="injury_value_oe" class="gt_row gt_right" style="background-color: #E0CBE3; color: #000000;">23.0%</td>
+<td headers="draft_value_oe" class="gt_row gt_right" style="background-color: #BEA0CC; color: #000000;">−34.1%</td>
+<td headers="best_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Jimmy Garoppolo (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted QB33 - Current QB21</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/fuepwtifp7wd9grpzvwb" style="height:45px;"></td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Stefon Diggs (2021)</div>
+<td headers="best_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/fuepwtifp7wd9grpzvwb" style="height:45px;"></td>
+<td headers="worst_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Stefon Diggs (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted WR3 - Current WR10</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/hcvd2avk0kufoli80veb" style="height:45px;"></td>
-<td class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/New_Orleans_Saints_logo.svg/98px-New_Orleans_Saints_logo.svg.png" style="height:45px;"></td></tr>
-    <tr><td class="gt_row gt_left">Galletti</td>
-<td class="gt_row gt_right">1</td>
-<td class="gt_row gt_right">🗑️</td>
-<td class="gt_row gt_right" style="background-color: #EBDDEC; color: #000000;">48.3%</td>
-<td class="gt_row gt_right" style="background-color: #BB9CC9; color: #000000;">38.5%</td>
-<td class="gt_row gt_right" style="background-color: #C2A5CF; color: #000000;">−9.8%</td>
-<td class="gt_row gt_right" style="background-color: #F2F6F0; color: #000000;">15.8%</td>
-<td class="gt_row gt_right" style="background-color: #CFB6D8; color: #000000;">−29.3%</td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Jameis Winston (2021)</div>
+<td headers="worst_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/hcvd2avk0kufoli80veb" style="height:45px;"></td>
+<td headers="team_logo_espn" class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/New_Orleans_Saints_logo.svg/98px-New_Orleans_Saints_logo.svg.png" style="height:45px;"></td></tr>
+    <tr><td headers="user_name" class="gt_row gt_left">Galletti</td>
+<td headers="years" class="gt_row gt_right">1</td>
+<td headers="emoji_collase" class="gt_row gt_right">🗑️</td>
+<td headers="allplay_winpct" class="gt_row gt_right" style="background-color: #EBDDEC; color: #000000;">48.3%</td>
+<td headers="h2h_winpct" class="gt_row gt_right" style="background-color: #BB9CC9; color: #000000;">38.5%</td>
+<td headers="luck_pct" class="gt_row gt_right" style="background-color: #C2A5CF; color: #000000;">−9.8%</td>
+<td headers="injury_value_oe" class="gt_row gt_right" style="background-color: #F2F6F0; color: #000000;">15.8%</td>
+<td headers="draft_value_oe" class="gt_row gt_right" style="background-color: #CFB6D8; color: #000000;">−29.3%</td>
+<td headers="best_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Jameis Winston (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted QB26 - Current QB13</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/dccgvojszpt06iwtmgv7" style="height:45px;"></td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Allen Robinson (2021)</div>
+<td headers="best_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/dccgvojszpt06iwtmgv7" style="height:45px;"></td>
+<td headers="worst_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Allen Robinson (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted WR11 - Current WR74</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/pph9jgnrnnlilxz8xhd9" style="height:45px;"></td>
-<td class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/e1/Kansas_City_Chiefs_logo.svg/100px-Kansas_City_Chiefs_logo.svg.png" style="height:45px;"></td></tr>
-    <tr><td class="gt_row gt_left">Jtnoel</td>
-<td class="gt_row gt_right">1</td>
-<td class="gt_row gt_right">🗑️</td>
-<td class="gt_row gt_right" style="background-color: #CFB6D8; color: #000000;">44.1%</td>
-<td class="gt_row gt_right" style="background-color: #BB9CC9; color: #000000;">38.5%</td>
-<td class="gt_row gt_right" style="background-color: #D4BCDB; color: #000000;">−5.6%</td>
-<td class="gt_row gt_right" style="background-color: #D4EECE; color: #000000;">15.5%</td>
-<td class="gt_row gt_right" style="background-color: #EBDDEC; color: #000000;">−8.5%</td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Antonio Brown (2021)</div>
+<td headers="worst_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/pph9jgnrnnlilxz8xhd9" style="height:45px;"></td>
+<td headers="team_logo_espn" class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/e/e1/Kansas_City_Chiefs_logo.svg/100px-Kansas_City_Chiefs_logo.svg.png" style="height:45px;"></td></tr>
+    <tr><td headers="user_name" class="gt_row gt_left">Jtnoel</td>
+<td headers="years" class="gt_row gt_right">1</td>
+<td headers="emoji_collase" class="gt_row gt_right">🗑️</td>
+<td headers="allplay_winpct" class="gt_row gt_right" style="background-color: #CFB6D8; color: #000000;">44.1%</td>
+<td headers="h2h_winpct" class="gt_row gt_right" style="background-color: #BB9CC9; color: #000000;">38.5%</td>
+<td headers="luck_pct" class="gt_row gt_right" style="background-color: #D4BCDB; color: #000000;">−5.6%</td>
+<td headers="injury_value_oe" class="gt_row gt_right" style="background-color: #D4EECE; color: #000000;">15.5%</td>
+<td headers="draft_value_oe" class="gt_row gt_right" style="background-color: #EBDDEC; color: #000000;">−8.5%</td>
+<td headers="best_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Antonio Brown (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted WR40 - Current WR6</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/ecxsx9t7bfg42bgfwj3v" style="height:45px;"></td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>A.J. Brown (2021)</div>
+<td headers="best_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/ecxsx9t7bfg42bgfwj3v" style="height:45px;"></td>
+<td headers="worst_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>A.J. Brown (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted WR9 - Current WR31</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/oiacjddbxvaeiewm9v62" style="height:45px;"></td>
-<td class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Dallas_Cowboys.svg/100px-Dallas_Cowboys.svg.png" style="height:45px;"></td></tr>
-    <tr><td class="gt_row gt_left">Anthonyclay</td>
-<td class="gt_row gt_right">1</td>
-<td class="gt_row gt_right">🗑️</td>
-<td class="gt_row gt_right" style="background-color: #BEA0CC; color: #000000;">39.2%</td>
-<td class="gt_row gt_right" style="background-color: #9970AB; color: #000000;">23.1%</td>
-<td class="gt_row gt_right" style="background-color: #9970AB; color: #000000;">−16.1%</td>
-<td class="gt_row gt_right" style="background-color: #EBDDEC; color: #000000;">21.7%</td>
-<td class="gt_row gt_right" style="background-color: #F2F6F0; color: #000000;">4.1%</td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Tom Brady (2021)</div>
+<td headers="worst_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/oiacjddbxvaeiewm9v62" style="height:45px;"></td>
+<td headers="team_logo_espn" class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Dallas_Cowboys.svg/100px-Dallas_Cowboys.svg.png" style="height:45px;"></td></tr>
+    <tr><td headers="user_name" class="gt_row gt_left">Anthonyclay</td>
+<td headers="years" class="gt_row gt_right">1</td>
+<td headers="emoji_collase" class="gt_row gt_right">🗑️</td>
+<td headers="allplay_winpct" class="gt_row gt_right" style="background-color: #BEA0CC; color: #000000;">39.2%</td>
+<td headers="h2h_winpct" class="gt_row gt_right" style="background-color: #9970AB; color: #FFFFFF;">23.1%</td>
+<td headers="luck_pct" class="gt_row gt_right" style="background-color: #9970AB; color: #FFFFFF;">−16.1%</td>
+<td headers="injury_value_oe" class="gt_row gt_right" style="background-color: #EBDDEC; color: #000000;">21.7%</td>
+<td headers="draft_value_oe" class="gt_row gt_right" style="background-color: #F2F6F0; color: #000000;">4.1%</td>
+<td headers="best_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Tom Brady (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted QB12 - Current QB1</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/n7fj5fjblf6pdgjdtphr" style="height:45px;"></td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Clyde Edwards-Helaire (2021)</div>
+<td headers="best_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/n7fj5fjblf6pdgjdtphr" style="height:45px;"></td>
+<td headers="worst_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Clyde Edwards-Helaire (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted RB13 - Current RB31</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/bvb7x487fiolt7c3hlke" style="height:45px;"></td>
-<td class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/72/NFL_Chargers_logo.svg/100px-NFL_Chargers_logo.svg.png" style="height:45px;"></td></tr>
-    <tr><td class="gt_row gt_left">Tynoel</td>
-<td class="gt_row gt_right">1</td>
-<td class="gt_row gt_right">🌮</td>
-<td class="gt_row gt_right" style="background-color: #9970AB; color: #000000;">20.3%</td>
-<td class="gt_row gt_right" style="background-color: #9970AB; color: #000000;">23.1%</td>
-<td class="gt_row gt_right" style="background-color: #EFE5F0; color: #000000;">2.8%</td>
-<td class="gt_row gt_right" style="background-color: #9970AB; color: #000000;">28.5%</td>
-<td class="gt_row gt_right" style="background-color: #9970AB; color: #000000;">−45.9%</td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Kareem Hunt (2021)</div>
+<td headers="worst_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/bvb7x487fiolt7c3hlke" style="height:45px;"></td>
+<td headers="team_logo_espn" class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/7/72/NFL_Chargers_logo.svg/100px-NFL_Chargers_logo.svg.png" style="height:45px;"></td></tr>
+    <tr><td headers="user_name" class="gt_row gt_left">Tynoel</td>
+<td headers="years" class="gt_row gt_right">1</td>
+<td headers="emoji_collase" class="gt_row gt_right">🌮</td>
+<td headers="allplay_winpct" class="gt_row gt_right" style="background-color: #9970AB; color: #FFFFFF;">20.3%</td>
+<td headers="h2h_winpct" class="gt_row gt_right" style="background-color: #9970AB; color: #FFFFFF;">23.1%</td>
+<td headers="luck_pct" class="gt_row gt_right" style="background-color: #EFE5F0; color: #000000;">2.8%</td>
+<td headers="injury_value_oe" class="gt_row gt_right" style="background-color: #9970AB; color: #FFFFFF;">28.5%</td>
+<td headers="draft_value_oe" class="gt_row gt_right" style="background-color: #9970AB; color: #FFFFFF;">−45.9%</td>
+<td headers="best_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Kareem Hunt (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted RB26 - Current RB17</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/soaqewfl8xjea2lpzfth" style="height:45px;"></td>
-<td class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Calvin Ridley (2021)</div>
+<td headers="best_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/soaqewfl8xjea2lpzfth" style="height:45px;"></td>
+<td headers="worst_combo" class="gt_row gt_left"><div style='line-height:10px'><span style='font-weight:bold;font-variant:small-caps;font-size:14px'>Calvin Ridley (2021)</div>
 <div style='line-height:12px'><span style ='font-weight:bold;color:grey;font-size:10px'>Drafted WR5 - Current WR26</span></div></td>
-<td class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/nrjs4cm8bpr9v9ktiqe2" style="height:45px;"></td>
-<td class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/48/Minnesota_Vikings_logo.svg/98px-Minnesota_Vikings_logo.svg.png" style="height:45px;"></td></tr>
+<td headers="worst_headshot" class="gt_row gt_center"><img src="https://static.www.nfl.com/image/private/f_auto,q_auto/league/nrjs4cm8bpr9v9ktiqe2" style="height:45px;"></td>
+<td headers="team_logo_espn" class="gt_row gt_center"><img src="https://upload.wikimedia.org/wikipedia/en/thumb/4/48/Minnesota_Vikings_logo.svg/98px-Minnesota_Vikings_logo.svg.png" style="height:45px;"></td></tr>
   </tbody>
   <tfoot class="gt_sourcenotes">
     <tr>
@@ -2779,16 +2849,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </tfoot>
   <tfoot class="gt_footnotes">
     <tr>
-      <td class="gt_footnote" colspan="13"><sup class="gt_footnote_marks">1</sup> What would your win rate be if you played every team each week?</td>
+      <td class="gt_footnote" colspan="13"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>1</sup></span> What would your win rate be if you played every team each week?</td>
     </tr>
     <tr>
-      <td class="gt_footnote" colspan="13"><sup class="gt_footnote_marks">2</sup> Difference between your win rate and all play win rate</td>
+      <td class="gt_footnote" colspan="13"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>2</sup></span> Difference between your win rate and all play win rate</td>
     </tr>
     <tr>
-      <td class="gt_footnote" colspan="13"><sup class="gt_footnote_marks">3</sup> Percent of your draft capital lost to injuries</td>
+      <td class="gt_footnote" colspan="13"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>3</sup></span> Percent of your draft capital lost to injuries</td>
     </tr>
     <tr>
-      <td class="gt_footnote" colspan="13"><sup class="gt_footnote_marks">4</sup> Value returned on each draft pick</td>
+      <td class="gt_footnote" colspan="13"><span class="gt_footnote_marks" style="white-space:nowrap;font-style:italic;font-weight:normal;"><sup>4</sup></span> Value returned on each draft pick</td>
     </tr>
   </tfoot>
 </table>

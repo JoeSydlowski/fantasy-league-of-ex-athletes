@@ -227,14 +227,14 @@ espn_conn <- espn_connect(
 
 sleeper_conn <- 
   sleeper_connect(
-    season = 2023,
-    league_id = 992218207261597696,
+    season = 2024,
+    league_id = 1124847526168522752,
     rate_limit_number = 1000,
     rate_limit_seconds = 60   
   )
 
 league_id_history <- create_league_id_history(platform = "sleeper",
-                                              league_id = 992218207261597696,
+                                              league_id = 1124847526168522752,
                                               conn = sleeper_conn)
 
 espn_scoring_history <- 
@@ -246,7 +246,7 @@ espn_scoring_history <-
                                   TRUE ~ platform_id))
 
 sleeper_scoring_history <- 
-  ff_scoringhistory(sleeper_conn, season = 2021:2022) %>%
+  ff_scoringhistory(sleeper_conn, season = 2021:2024) %>%
   filter(week <= 17, pos %in% c("QB","RB","WR","TE")) %>% 
   rename(platform_id = sleeper_id)
 
@@ -309,7 +309,11 @@ draft_history <-
            user_name == "terryclark1991" ~ "terry clark",
            user_name == "TyNoel" ~ "Ty Noel",
            user_name == "nickg1212" ~ "Nick Galletti",
+           user_name == "nickgalletti" ~ "Nick Galletti",
            user_name == "reinhart64" ~ "Michael Reinhart",
+           user_name == "KissumChrisum" ~ "Chris Knafelc",
+           user_name == "coltwash" ~ "Colton Wash",
+           user_name == "j2gruenke" ~ "Josh 'Steve' Gruenke",
            TRUE ~ user_name)) %>% 
   ungroup()
 
@@ -470,7 +474,7 @@ standings_unnested <- standings_nested %>%
 playoffs_nested <- league_id_history %>% 
   
   # JOE LOOK HERE PLEASE
-  filter(season <= 2022) |> 
+  # filter(season <= 2022) |> 
   mutate(playoff_standings = map2(.x = league_id,
                                   .y = season,
                                   .f = get_sleeper_playoffs))
@@ -501,13 +505,16 @@ standings_history_combined <-
     user_name == "terryclark1991" ~ "terry clark",
     user_name == "TyNoel" ~ "Ty Noel",
     user_name == "nickg1212" ~ "Nick Galletti",
+    user_name == "nickgalletti" ~ "Nick Galletti",
     user_name == "reinhart64" ~ "Michael Reinhart",
-    
+    user_name == "KissumChrisum" ~ "Chris Knafelc",
+    user_name == "coltwash" ~ "Colton Wash",
+    user_name == "j2gruenke" ~ "Josh 'Steve' Gruenke",
     TRUE ~ user_name))
 
 blank_emojis <- 
   crossing(user_name = unique(standings_history_combined$user_name),
-           season = c(2015:2022))
+           season = c(2015:2024))
 
 standings_history <- 
   blank_emojis %>% 
@@ -544,4 +551,4 @@ flea_df <-
   arrange(-first_place, -allplay_wins) %>% 
   select(-c(first_place, last_season, pick_year, allplay_wins))
 
-saveRDS(flea_df, "data/flea_df_2022.RDS")
+saveRDS(flea_df, "data/flea_df_2024.RDS")
