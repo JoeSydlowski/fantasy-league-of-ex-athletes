@@ -346,7 +346,7 @@ best_draft_picks <-
   group_by(user_name) %>%
   slice_min(order_by = -value_diff, n = 1, with_ties = FALSE) %>%
   ungroup() %>%
-  mutate(best_string = glue("Drafted {pos}{pos_rank} - Finshed {pos}{ppg_rank}"),
+  mutate(best_string = glue("Drafted {pos}{pos_rank} - Finished {pos}{ppg_rank}"),
          best_headshot = map2(player_id, season, get_headshot),
          player_name = glue("{player_name} ({season})"),
          best_combo = combine_word(player_name, best_string),
@@ -358,7 +358,7 @@ worst_draft_picks <-
   group_by(user_name) %>%
   slice_min(order_by = value_diff, n = 1, with_ties = FALSE) %>%
   ungroup() %>%
-  mutate(worst_string = glue("Drafted {pos}{pos_rank} - Finshed {pos}{ppg_rank}"),
+  mutate(worst_string = glue("Drafted {pos}{pos_rank} - Finished {pos}{ppg_rank}"),
          worst_headshot = map2(player_id, season, get_headshot),
          player_name = glue("{player_name} ({season})"),
          worst_combo = combine_word(player_name, worst_string),
