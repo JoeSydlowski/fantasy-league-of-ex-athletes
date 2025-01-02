@@ -2,7 +2,8 @@
 title: "Fantasy League of Ex-Athletes"
 description: |
   Welcome to our site for league history, blogs, and more
-site: distill::distill_website
+site: distill_website
+author: "Joe Sydlowski"
 ---
 
 ```{r setup, include=FALSE}
